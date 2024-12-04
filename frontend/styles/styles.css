@@ -1,0 +1,42 @@
+body { 
+    background-color: cadetblue;
+}
+
+#place {
+    border: 10px red;
+    background-color: white;
+    height: 500px;
+    width: 500px;
+}
+
+.colorbox {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+}
+
+
+#color1 {
+    background-color: red;
+}
+#color2 {
+    background-color: orange;
+}
+#color3 {
+    background-color: yellow;
+}
+#color4 {
+    background-color: green;
+}
+#color5 {
+    background-color: blue;
+}
+#color6 {
+    background-color: violet;
+}
+#color7 {
+    background-color: black;
+}
+#color8 {
+    background-color: white;
+}
