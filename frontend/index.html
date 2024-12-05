@@ -13,15 +13,6 @@
         <canvas id="place"></canvas>
         <canvas id="magnifier"></canvas>
         <div id="controls" class="nomagnify">
-            <li class="colorbox" id="color1" value="0"></li>
-            <li class="colorbox" id="color2" value="1"></li>
-            <li class="colorbox" id="color3" value="2"></li>
-            <li class="colorbox" id="color4" value="3"></li>
-            <li class="colorbox" id="color5" value="4"></li>
-            <li class="colorbox" id="color6" value="5"></li>
-            <li class="colorbox" id="color7" value="6"></li>
-            <li class="colorbox" id="color8" value="7"></li>
-
         </div>
     </div>
     <!-- MAGNIFIER SETTINGS -->
@@ -30,6 +21,12 @@
             <h2>Magnifier settings</h2>
             <p>Pixels to show in the magnifier: </p>
             <input type="number" name="resolution" id="resolution" min="2" max="30" step="1" value="16">
+        </div>
+        <div style="background-color: azure; padding: 4em;">
+            <h2>Leave a note with your pixels</h2>
+            <p style="color:red">(not yet set up in lexicon)</p>
+            <p>These will stay in your repo forever but fade from this site quickly, so don't write anything stupid. Will be submitted with each pixel you change.</p>
+            <textarea name="notebox" id="note" cols="30" rows="10" maxlength="300"></textarea>
         </div>
     </div>
     <!-- Alternative Stream Toggle -->
@@ -43,6 +40,15 @@
                 <input type="radio" name="pixelsource" value="1" id="bskystream">
                 <label for="bskystream">Calculated from bluesky posts</label>
             </fieldset>
+        </div>
+    <!-- THE EVENT STREAM -->
+        <div style="background-color: burlywood; padding: 4em; max-width: initial">
+            <h2>Event Stream</h2>
+            <label for="eventspeed">Event Speed:</label>
+            <input type="range" name="eventspeed" id="eventspeed" min="1" max="50" value="10">
+            <div id="events">
+
+            </div>
         </div>
     </div>
     <!-- LOGIN SECTION -->
@@ -67,6 +73,7 @@
         </div>
     </div>
     <script src="scripts/base32.js"></script>
+    <script src="scripts/setup.js"></script>
     <script src="scripts/atproto.js"></script>
     <script src="scripts/place.js"></script>
 

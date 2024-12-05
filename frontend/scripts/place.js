@@ -34,12 +34,6 @@ function getCursorPosition(canvas, event) {
     return([x, y])
 }
 
-// Instantiate a list of colors where each index represents
-// the color of the box 
-const COLORLIST = Array.from(
-    document.querySelectorAll('li.colorbox'))
-    .map( e => window.getComputedStyle(e).backgroundColor)
-
 // Simple function to draw a pixel on a canvas
 function drawPixel(context, x, y, color) {
     context.fillStyle = COLORLIST[color];

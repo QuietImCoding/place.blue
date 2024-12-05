@@ -32,12 +32,13 @@ h1 {
 
 
 .col-left {
-    float: left
+    float: left;
+    max-width: 500px;
 }
 .col-right {
     float: right
 }
-input{
+input[type="text"], input[type="radio"]{
     display:block;
     width: inherit;
 }
@@ -58,29 +59,4 @@ input{
 }
 .inrow {
     display: inline;
-}
-
-#color1 {
-    background-color: red;
-}
-#color2 {
-    background-color: orange;
-}
-#color3 {
-    background-color: yellow;
-}
-#color4 {
-    background-color: green;
-}
-#color5 {
-    background-color: blue;
-}
-#color6 {
-    background-color: violet;
-}
-#color7 {
-    background-color: black;
-}
-#color8 {
-    background-color: white;
 }
