@@ -57,7 +57,7 @@ magnifier.addEventListener('click', function(e) {
 
 // Function to magnify the detailed image
 function renderMagnifier(xval, yval) {
-    let res = document.getElementById("resolution").value;
+    let res = parseInt(document.getElementById("resolution").value);
     let division = (res * 2) + 1
     let offset = 90 / division
     let region = ctx.getImageData(xval-res, yval-res, division, division);
@@ -66,7 +66,8 @@ function renderMagnifier(xval, yval) {
         for (let y = 0; y < division; y++) {
             let i = ((x * division) + y) * 4;
             let rgbColor = `rgb(${data[i]} ${data[i+1]} ${data[i+2]} / ${data[i+3] / 255})`;
-            magctx.fillStyle = rgbColor;
+            magctx.fillStyle = ( xval-res+y > 0 && yval-res+x > 0 && 
+                xval-res+y < 500 && yval-res+x < 500 ) ? rgbColor : "cadetblue";
             magctx.fillRect((y)*offset, (x)*offset, offset, offset)
         }
     }
@@ -76,7 +77,6 @@ function renderMagnifier(xval, yval) {
 window.addEventListener("mousemove", e => {
     let [x, y] = getCursorPosition(canvas, e);
     renderMagnifier(x, y);
-
     magnifier.animate({
         left : `${e.clientX}px`,
         top : `${e.clientY}px`

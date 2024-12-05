@@ -41,6 +41,9 @@ input{
     display:block;
     width: inherit;
 }
+#controls {
+    padding: 2em 0em 2em 0em;
+}
 #login {
     background-color: aqua;
     width: 200px;
@@ -56,6 +59,7 @@ input{
 .inrow {
     display: inline;
 }
+
 #color1 {
     background-color: red;
 }

@@ -32,6 +32,19 @@
             <input type="number" name="resolution" id="resolution" min="2" max="30" step="1" value="16">
         </div>
     </div>
+    <!-- Alternative Stream Toggle -->
+    <div class="col-left nomagnify">
+        <div style="background-color: cornsilk; padding: 4em;">
+            <h2>Toggle Alternative Pixel Stream</h2>
+            <fieldset>
+                <legend>Select Pixel Source</legend>
+                <input type="radio" name="pixelsource" value="0" id="blueplacestream" checked>
+                <label for="blueplacestream">Place.blue Pixel Records</label>
+                <input type="radio" name="pixelsource" value="1" id="bskystream">
+                <label for="bskystream">Calculated from bluesky posts</label>
+            </fieldset>
+        </div>
+    </div>
     <!-- LOGIN SECTION -->
     <div class="col-right">
         <div id="login" class="nomagnify">

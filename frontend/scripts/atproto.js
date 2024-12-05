@@ -64,7 +64,8 @@ function publishPixel(xval, yval, cval) {
             record: {
                 x: xval,
                 y: yval,
-                color: cval
+                color: cval,
+                createdAt: (new Date).toISOString()
             }
         }),
         headers: {
@@ -104,6 +105,8 @@ document.getElementById("auth").addEventListener("click", () => {
     )
 })
 
+let altstream = false;
+
 // Jetstream subscription to blue.place.pixel records!
 let socketURI = 'wss://jetstream2.us-east.bsky.network/subscribe\?wantedCollections=blue.place.pixel'
 subscription = new WebSocket(socketURI);
@@ -113,6 +116,32 @@ subscription.onmessage = e => {
     if ( msgData.type = "com" && msgData.kind == "commit") {
         let record = msgData.commit.record
         console.log(`User: ${msgData.did} created a type ${record.color} pixel at (${record.x}, ${record.y})`)
-        drawPixel(ctx, record.x, record.y, record.color);
+        if (! altstream ) drawPixel(ctx, record.x, record.y, record.color);
     }
 };
+
+let otherSocketURI = 'wss://jetstream2.us-east.bsky.network/subscribe\?wantedCollections=app.bsky.feed.post'
+othersubscription = new WebSocket(otherSocketURI);
+othersubscription.onmessage = e => {
+    let msgData = JSON.parse(e.data);
+    // Filter for only commits
+    if ( msgData.type = "com" && msgData.kind == "commit") {
+        let record = msgData.commit.record
+        if (record && 'text' in record) {
+            let color = record.text.length % 8
+            let lcount = {}; record.text.split('').forEach( l => { if (lcount[l]) lcount[l] += 1; else lcount[l] = 1 })
+            let x = Math.floor(500 * (Math.cos(Object.keys(lcount).reduce( (acc, val) => 
+                acc + ( "aeiou".includes(val) ? lcount[val] : 0 ), 0)) ** 2));
+            let y = Math.floor(500 * (Math.cos(Object.keys(lcount).reduce( (acc, val) => 
+                acc + ( !"aeiou".includes(val) ? lcount[val] : 0 ), 0)) ** 2));
+            // console.log(`ALTERNATIVE STREAM: User: ${msgData.did} created a type ${color} pixel at (${x}, ${y})`)
+
+            if ( altstream ) drawPixel(ctx, x, y, color);
+        }
+
+    }
+};
+
+document.querySelectorAll('input[name="pixelsource"]').forEach(e => {
+    e.addEventListener("click", e => {altstream = e.target.value})
+})
