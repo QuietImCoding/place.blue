@@ -72,6 +72,21 @@ function publishPixel(xval, yval, cval) {
 
 }
 
+// tries to get username for a DID
+function didLookup(queryDID) {
+    let response = fetch('https://plc.directory/'+ queryDID, {
+        method: "GET",
+        headers: {
+            "Content-type": "application/json; charset=UTF-8",
+        }
+        }).then((response) => response.json())
+        .then((json) => {
+            if ( json.alsoKnownAs.length > 0 ){
+                console.log(`^ Last pixel by ${json.alsoKnownAs[0]}`); 
+            } 
+        });
+
+}
 
 
 document.getElementById("auth").addEventListener("click", () => {
@@ -88,7 +103,7 @@ subscription.onmessage = e => {
     let msgData = JSON.parse(e.data);
     if ( msgData.type = "com" && msgData.kind == "commit") {
         let record = msgData.commit.record
-        console.log(record)
+        console.log(`User: ${msgData.did} created a type ${record.color} pixel at (${record.x}, ${record.y})`)
         drawPixel(ctx, record.x, record.y, record.color);
     }
 };

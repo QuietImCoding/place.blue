@@ -97,8 +97,20 @@ Array.from(document.querySelectorAll('.nomagnify')).forEach( e => {
     e.addEventListener("mouseleave", () => magnifier.hidden = false)
 })
 
+document.getElementById('push').addEventListener('click', e => {
+    publishPixel(
+        document.getElementById('x').value,
+        document.getElementById('y').value,
+        document.getElementById('color').value
+    );
+})
+
 let testimg = new Image()
-testimg.src = "images/bwcheckers.png"
+testimg.src = "base.png"
 testimg.addEventListener("load", () => {
     ctx.drawImage(testimg, 0, 0);
   });
+
+  document.getElementById('color').addEventListener("change", e => {
+    document.getElementById("colorref").innerText = `Color #${e.target.value}, ${COLORLIST[e.target.value]}`;
+  })

@@ -33,6 +33,14 @@
                 <input type="password" name="password" id="password" placeholder="App Password">
                 <button id="auth">log me in</button>
         </div>
+        <div class="nomagnify" id="manualinput">
+            <h2>Manual pixel input</h2>
+            <input class="inrow" type="text" name="x" id="x" placeholder="x">
+            <input class="inrow" type="text" name="y" id="y" placeholder="y">
+            <input type="range" name="color" id="color" min="0" max="7">
+            <p id="colorref"></p>
+            <button id="push">send pixel</button>
+        </div>
     </div>
     <script src="scripts/base32.js"></script>
     <script src="scripts/atproto.js"></script>

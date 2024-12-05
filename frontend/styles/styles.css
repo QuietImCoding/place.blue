@@ -47,6 +47,15 @@ input{
     padding: 4em;
     word-wrap: normal;
 }
+#manualinput {
+    background-color: coral;
+    width: 200px;
+    padding: 4em;
+    word-wrap: normal;
+}
+.inrow {
+    display: inline;
+}
 #color1 {
     background-color: red;
 }
