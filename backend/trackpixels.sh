@@ -7,7 +7,7 @@ do
     read -r xcor
     read -r ycor
     echo "Setting pixel at $xcor $ycor to ${COLORLIST[color]}"
-    convert base.png -fill "${COLORLIST[$color]}" -draw "point $xcor,$ycor" out.png
+    convert base.png -fill "${COLORLIST[$color]}" -draw "color $xcor,$ycor point" out.png
     mv out.png base.png
     neocities upload base.png &
 done
