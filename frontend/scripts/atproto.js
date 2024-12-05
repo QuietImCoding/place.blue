@@ -87,6 +87,8 @@ subscription = new WebSocket(socketURI);
 subscription.onmessage = e => {
     let msgData = JSON.parse(e.data);
     if ( msgData.type = "com" && msgData.kind == "commit") {
-        console.log(msgData);
+        let record = msgData.commit.record
+        console.log(record)
+        drawPixel(ctx, record.x, record.y, record.color);
     }
 };

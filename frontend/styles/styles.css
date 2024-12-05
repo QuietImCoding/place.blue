@@ -9,6 +9,15 @@ body {
     width: 500px;
 }
 
+#magnifier {
+    border: 5px ridge black;
+    width: 90;
+    height: 90;
+    border-radius: 100%;
+    transform: translate(-50%, -50%);
+    position: fixed;
+}
+
 h1 {
     display: inline
 }
@@ -20,6 +29,7 @@ h1 {
     width: 50px;
     height: 50px;
 }
+
 
 .col-left {
     float: left
