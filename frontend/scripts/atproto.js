@@ -1,6 +1,7 @@
 let domain, username, did, jwt, refresh;
 let authIndicator = document.getElementById("account")
 
+// Function to get a jwt from a PDS
 function getToken(provider, handle, password) { 
     let response = fetch(provider + '/xrpc/com.atproto.server.createSession', {
     method: "POST",
@@ -24,6 +25,7 @@ function getToken(provider, handle, password) {
     });
 }
 
+// Function to refresh your jwts
 function refreshToken() {
     let response = fetch(domain + '/xrpc/com.atproto.server.refreshSession', {
         method: "POST",
@@ -39,6 +41,8 @@ function refreshToken() {
         });
 }
 
+// Function to generate resource ID
+// i am scared of this one
 function generateTID() {
     return( 
         Conversions.base32.encode(Date.now().toString())
@@ -48,6 +52,8 @@ function generateTID() {
     );
 }
 
+// Just put some json on the server they said
+// it will be fun, they said (they is David Buchanan)
 function publishPixel(xval, yval, cval) {
     let response = fetch(domain + '/xrpc/com.atproto.repo.putRecord', {
         method: "POST",
@@ -89,6 +95,7 @@ function didLookup(queryDID) {
 }
 
 
+// When you click the auth button, do auth
 document.getElementById("auth").addEventListener("click", () => {
     getToken(
         document.getElementById("provider").value,
@@ -97,10 +104,12 @@ document.getElementById("auth").addEventListener("click", () => {
     )
 })
 
+// Jetstream subscription to blue.place.pixel records!
 let socketURI = 'wss://jetstream2.us-east.bsky.network/subscribe\?wantedCollections=blue.place.pixel'
 subscription = new WebSocket(socketURI);
 subscription.onmessage = e => {
     let msgData = JSON.parse(e.data);
+    // Filter for only commits
     if ( msgData.type = "com" && msgData.kind == "commit") {
         let record = msgData.commit.record
         console.log(`User: ${msgData.did} created a type ${record.color} pixel at (${record.x}, ${record.y})`)
