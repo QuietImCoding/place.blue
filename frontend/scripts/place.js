@@ -14,7 +14,7 @@ let drawcolor, x, y;
 let animating = false;
 let previoushover = false;
 
-
+// Assign the click event listeners to every color box
 Array.from(document.getElementsByClassName("colorbox")).forEach(element => {
     element.addEventListener("click", e => {
         colorvalue = e.target.value;
@@ -25,6 +25,7 @@ Array.from(document.getElementsByClassName("colorbox")).forEach(element => {
     })
 });
 
+// Function to get the position of the cursor relative to a canvas
 function getCursorPosition(canvas, event) {
     const rect = canvas.getBoundingClientRect()
     const x = event.clientX - rect.left
@@ -33,15 +34,19 @@ function getCursorPosition(canvas, event) {
     return([x, y])
 }
 
+// Instantiate a list of colors where each index represents
+// the color of the box 
 const COLORLIST = Array.from(
     document.querySelectorAll('li.colorbox'))
     .map( e => window.getComputedStyle(e).backgroundColor)
 
+// Simple function to draw a pixel on a canvas
 function drawPixel(context, x, y, color) {
     context.fillStyle = COLORLIST[color];
     context.fillRect(x, y, 1, 1);
 }
 
+// Function to publish pixel when magnifier clicked
 magnifier.addEventListener('click', function(e) {
     [x, y] = getCursorPosition(canvas, e);
     // console.log(x, y);
@@ -50,32 +55,24 @@ magnifier.addEventListener('click', function(e) {
     publishPixel(x, y, colorvalue);
 })
 
+// Function to magnify the detailed image
 function renderMagnifier(xval, yval) {
-    let region = ctx.getImageData(xval-4, yval-4, 9, 9);
+    let res = document.getElementById("resolution").value;
+    let division = (res * 2) + 1
+    let offset = 90 / division
+    let region = ctx.getImageData(xval-res, yval-res, division, division);
     const data = region.data
-    for (let x = 0; x < 9; x++) {
-        for (let y = 0; y < 9; y++) {
-            let i = ((x * 9) + y) * 4;
-            // console.log(data[i])
+    for (let x = 0; x < division; x++) {
+        for (let y = 0; y < division; y++) {
+            let i = ((x * division) + y) * 4;
             let rgbColor = `rgb(${data[i]} ${data[i+1]} ${data[i+2]} / ${data[i+3] / 255})`;
             magctx.fillStyle = rgbColor;
-            magctx.fillRect((y)*10, (x)*10, 10, 10)
+            magctx.fillRect((y)*offset, (x)*offset, offset, offset)
         }
     }
 }
 
-function elementsOverlap(el1, el2) {
-    const domRect1 = el1.getBoundingClientRect();
-    const domRect2 = el2.getBoundingClientRect();
-  
-    return !(
-      domRect1.top > domRect2.bottom ||
-      domRect1.right < domRect2.left ||
-      domRect1.bottom < domRect2.top ||
-      domRect1.left > domRect2.right
-    );
-  }
-  
+// When mouse moved, render the magnifier and animate it
 window.addEventListener("mousemove", e => {
     let [x, y] = getCursorPosition(canvas, e);
     renderMagnifier(x, y);
@@ -90,6 +87,7 @@ window.addEventListener("mousemove", e => {
     magnifier.style.top = `${e.clientY}px`
 })
 
+// Events to hide and show the magnifier
 Array.from(document.querySelectorAll('.nomagnify')).forEach( e => {
     e.addEventListener("mouseenter", () => magnifier.hidden = true)
 })
@@ -97,6 +95,7 @@ Array.from(document.querySelectorAll('.nomagnify')).forEach( e => {
     e.addEventListener("mouseleave", () => magnifier.hidden = false)
 })
 
+// Button to publish the pixels
 document.getElementById('push').addEventListener('click', e => {
     publishPixel(
         document.getElementById('x').value,
@@ -105,12 +104,14 @@ document.getElementById('push').addEventListener('click', e => {
     );
 })
 
+// Load Image from the server and fill canvas
 let testimg = new Image()
 testimg.src = "base.png"
 testimg.addEventListener("load", () => {
     ctx.drawImage(testimg, 0, 0);
   });
 
-  document.getElementById('color').addEventListener("change", e => {
+// Color slider
+document.getElementById('color').addEventListener("change", e => {
     document.getElementById("colorref").innerText = `Color #${e.target.value}, ${COLORLIST[e.target.value]}`;
-  })
+})
