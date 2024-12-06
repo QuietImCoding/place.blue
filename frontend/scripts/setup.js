@@ -1,3 +1,5 @@
+// Set up Main canvas and magnifier
+
 const canvas = document.getElementById("place");
 const magnifier = document.getElementById("magnifier");
 canvas.height = 500;
@@ -8,11 +10,20 @@ const ctx = canvas.getContext("2d", { willReadFrequently: true });
 ctx.fillStyle = "white";
 ctx.fillRect(0,0, 500, 500)
 const magctx = magnifier.getContext("2d")
+
+// Set up random important variables
+// Select necessary DOM elements
 var colorpreview = document.getElementById("colorpreview");
+let authIndicator = document.getElementById("account");
+let eventbox = document.getElementById("events");
+// Initialize values
 let colorvalue = 0;
 let drawcolor, x, y;
 let animating = false;
-let previoushover = false;
+let domain, username, did, jwt, refresh;
+let altstream = false;
+
+
 
 const COLORLIST = [
     "#000000",
