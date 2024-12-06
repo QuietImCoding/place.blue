@@ -4,10 +4,11 @@ function update_image() {
     while true; do
         read -r type
         read -r color
-        read -r date
+        read -r createdat
+        read -r note
         read -r xcor
         read -r ycor
-        echo "[$date] - Setting pixel at $xcor $ycor to ${COLORLIST[color]}"
+        echo "[$createdat] - Setting pixel at $xcor $ycor to ${COLORLIST[color]}, note was: $note"
         convert base.png -fill "${COLORLIST[$color]}" -draw "point $xcor,$ycor" out.png
         mv out.png base.png
         neocities upload base.png &

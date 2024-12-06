@@ -106,27 +106,36 @@ async function didLookup(queryDID) {
 }
 
 let eventbox = document.getElementById("events");
-// THE BIG PUSH 
-async function pushEvent(rid, eventdid, location, color, text = null) {
+// THE BIG PUSH
+async function pushEvent(
+  rid,
+  eventdid,
+  location,
+  color,
+  text = null,
+  blueplace = true
+) {
+
   let eventLabel = document.createElement("p");
   let colortag = document.createElement("span");
   colortag.style.backgroundColor = COLORLIST[color];
   colortag.innerText = color;
   let septag = document.createElement("hr");
+  let texttag;
+
   if (text != null) {
-    let texttag = document.createElement("p");
+    texttag = document.createElement("p");
     texttag.innerText = `Post text was: ${
       text.substring(0, 100) + (text.length > 100 ? "..." : "")
     }.`;
-    eventLabel.innerHTML = `<a href="https://bsky.app/profile/${eventdid}/post/${rid}">${eventdid}:</a> created pixel at (${location.toString()}) with color `;
-    eventLabel.appendChild(colortag);
-    eventLabel.appendChild(texttag);
-    eventLabel.appendChild(septag);
-  } else {
-    eventLabel.innerHTML = `<a href="https://pdsls.dev/at/${eventdid}/blue.place.pixel/${rid}">${eventdid}:</a> created pixel at (${location.toString()}) with color `;
-    eventLabel.appendChild(colortag);
-    eventLabel.appendChild(septag);
   }
+  eventLabel.innerHTML = blueplace
+    ? `<a href="https://pdsls.dev/at/${eventdid}/blue.place.pixel/${rid}">${eventdid}:</a> created pixel at (${location.toString()}) with color `
+    : `<a href="https://bsky.app/profile/${eventdid}/post/${rid}">${eventdid}:</a> created pixel at (${location.toString()}) with color `;
+  eventLabel.appendChild(colortag);
+  eventLabel.appendChild(texttag);
+  eventLabel.appendChild(septag);
+
   eventbox.prepend(eventLabel);
   if (eventbox.childElementCount > 10) {
     eventbox.lastChild.remove();
@@ -164,7 +173,9 @@ subscription.onmessage = async (e) => {
         msgData.commit.rkey,
         userID == null ? msgData.did : userID.slice(5),
         [record.x, record.y],
-        record.color
+        record.color,
+        record.note,
+        true
       );
     }
   }
@@ -208,7 +219,10 @@ othersubscription.onmessage = async (e) => {
       );
       // console.log(`ALTERNATIVE STREAM: User: ${msgData.did} created a type ${color} pixel at (${x}, ${y})`)
       if (altstream) {
-        if (Date.now() % 500 < parseInt(document.getElementById('eventspeed').value)) {
+        if (
+          Date.now() % 500 <
+          parseInt(document.getElementById("eventspeed").value)
+        ) {
           drawPixel(ctx, x, y, color);
           let userID = await didLookup(msgData.did);
           pushEvent(
@@ -216,7 +230,8 @@ othersubscription.onmessage = async (e) => {
             userID == null ? msgData.did : userID.slice(5),
             [x, y],
             color,
-            record.text
+            record.text,
+            false
           );
         }
       }
