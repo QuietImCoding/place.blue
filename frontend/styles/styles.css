@@ -28,8 +28,6 @@ div #place {
 
 #magnifier {
     border: 5px ridge black;
-    width: 90;
-    height: 90;
     border-radius: 100%;
     transform: translate(-50%, -50%);
     position: fixed;

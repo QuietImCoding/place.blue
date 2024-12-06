@@ -73,3 +73,4 @@ Array.from(document.getElementsByClassName("colorbox")).forEach(element => {
         // console.log(colorvalue)
     })
 });
+

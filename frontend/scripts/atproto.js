@@ -1,6 +1,3 @@
-let domain, username, did, jwt, refresh;
-let authIndicator = document.getElementById("account");
-
 // Function to get a jwt from a PDS
 function getToken(provider, handle, password) {
   let response = fetch(provider + "/xrpc/com.atproto.server.createSession", {
@@ -105,7 +102,6 @@ async function didLookup(queryDID) {
   return await response;
 }
 
-let eventbox = document.getElementById("events");
 // THE BIG PUSH
 async function pushEvent(
   rid,
@@ -150,8 +146,6 @@ document.getElementById("auth").addEventListener("click", () => {
     document.getElementById("password").value
   );
 });
-
-let altstream = false;
 
 // Jetstream subscription to blue.place.pixel records!
 let socketURI =

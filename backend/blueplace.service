@@ -1,0 +1,18 @@
+[Unit]
+Description=Run place.blue backend
+
+[Service]
+Type=simple
+
+WorkingDirectory=/root/place.blue/backend/
+# YOU WILL NEED TO REPLACE THIS 
+ExecStart=/root/.local/share/virtualenvs/backend-incLFPiX/bin/python -u backend.py
+ExecStop=/bin/kill -- $MAINPID
+Restart=on-failure
+RestartSec=10
+KillMode=control-group
+
+
+
+[Install]
+WantedBy=multi-user.target

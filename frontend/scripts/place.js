@@ -29,7 +29,7 @@ magnifier.addEventListener("click", function (e) {
 function renderMagnifier(xval, yval) {
   let res = parseInt(document.getElementById("resolution").value);
   let division = res * 2 + 1;
-  let offset = 90 / division;
+  let offset = magnifier.clientHeight / division;
   let region = ctx.getImageData(xval - res, yval - res, division, division);
   const data = region.data;
   for (let x = 0; x < division; x++) {
@@ -98,3 +98,11 @@ document.getElementById("color").addEventListener("change", (e) => {
     COLORLIST[e.target.value]
   }`;
 });
+
+// Listen for magnifier resizes
+document.getElementById("magsize").addEventListener('change', e => {
+    magnifier.clientHeight = parseInt(e.target.value);
+    magnifier.clientWidth = parseInt(e.target.value);
+    magnifier.height = parseInt(e.target.value);
+    magnifier.width = parseInt(e.target.value);
+})
