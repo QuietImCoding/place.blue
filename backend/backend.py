@@ -39,6 +39,6 @@ with connect_ws(BSKY_JETSTREAM) as ws:
                     x = record["x"]
                     y = record["y"]
                     draw.point([(x, y)], fill=color)
-                    im.save("updated.png")
+                    im.save("output/base.png")
                     print(f"{color} pixel at [{x}, {y}], provided note: {note}")
                 
