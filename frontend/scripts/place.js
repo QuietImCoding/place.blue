@@ -1,30 +1,3 @@
-const canvas = document.getElementById("place");
-const magnifier = document.getElementById("magnifier");
-canvas.height = 500;
-canvas.width = 500;
-magnifier.width=90;
-magnifier.height=90;
-const ctx = canvas.getContext("2d", { willReadFrequently: true });
-ctx.fillStyle = "white";
-ctx.fillRect(0,0, 500, 500)
-const magctx = magnifier.getContext("2d")
-var colorpreview = document.getElementById("colorpreview");
-let colorvalue = 0;
-let drawcolor, x, y;
-let animating = false;
-let previoushover = false;
-
-// Assign the click event listeners to every color box
-Array.from(document.getElementsByClassName("colorbox")).forEach(element => {
-    element.addEventListener("click", e => {
-        colorvalue = e.target.value;
-        var fillcolor = window.getComputedStyle(e.target).backgroundColor;
-        drawcolor = fillcolor;
-        colorpreview.style.backgroundColor = fillcolor;
-        // console.log(colorvalue)
-    })
-});
-
 // Function to get the position of the cursor relative to a canvas
 function getCursorPosition(canvas, event) {
     const rect = canvas.getBoundingClientRect()
@@ -34,19 +7,17 @@ function getCursorPosition(canvas, event) {
     return([x, y])
 }
 
-// Simple function to draw a pixel on a canvas
-function drawPixel(context, x, y, color) {
-    context.fillStyle = COLORLIST[color];
-    context.fillRect(x, y, 1, 1);
-}
-
 // Function to publish pixel when magnifier clicked
 magnifier.addEventListener('click', function(e) {
+    if (jwt) {
     [x, y] = getCursorPosition(canvas, e);
     // console.log(x, y);
     // ctx.fillStyle = drawcolor;
     // ctx.fillRect(x, y, 10, 10);
-    publishPixel(x, y, colorvalue);
+    publishPixel(Math.floor(x), Math.floor(y), colorvalue, document.getElementById('note').value);
+    } else {
+        alert("Please log in before drawing pixels");
+    }
 })
 
 // Function to magnify the detailed image
@@ -94,7 +65,8 @@ document.getElementById('push').addEventListener('click', e => {
     publishPixel(
         document.getElementById('x').value,
         document.getElementById('y').value,
-        document.getElementById('color').value
+        document.getElementById('color').value,
+        document.getElementById('note').value
     );
 })
 

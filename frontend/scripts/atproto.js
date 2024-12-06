@@ -55,7 +55,7 @@ function generateTID() {
 
 // Just put some json on the server they said
 // it will be fun, they said (they is David Buchanan)
-function publishPixel(xval, yval, cval) {
+function publishPixel(xval, yval, cval, text = null) {
   let response = fetch(domain + "/xrpc/com.atproto.repo.putRecord", {
     method: "POST",
     body: JSON.stringify({
@@ -66,6 +66,7 @@ function publishPixel(xval, yval, cval) {
         x: xval,
         y: yval,
         color: cval,
+        note: text,
         createdAt: new Date().toISOString(),
       },
     }),

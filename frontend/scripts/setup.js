@@ -1,8 +1,18 @@
-// Instantiate a list of colors where each index represents
-// the color of the box
-// const COLORLIST = Array.from(
-//     document.querySelectorAll('li.colorbox'))
-//     .map( e => window.getComputedStyle(e).backgroundColor)
+const canvas = document.getElementById("place");
+const magnifier = document.getElementById("magnifier");
+canvas.height = 500;
+canvas.width = 500;
+magnifier.width=90;
+magnifier.height=90;
+const ctx = canvas.getContext("2d", { willReadFrequently: true });
+ctx.fillStyle = "white";
+ctx.fillRect(0,0, 500, 500)
+const magctx = magnifier.getContext("2d")
+var colorpreview = document.getElementById("colorpreview");
+let colorvalue = 0;
+let drawcolor, x, y;
+let animating = false;
+let previoushover = false;
 
 const COLORLIST = [
     "#000000",
@@ -30,8 +40,25 @@ COLORLIST.forEach( col  => {
     let newbox = document.createElement('li');
     newbox.classList.add("colorbox");
     newbox.style.backgroundColor = col;
-    console.log(col);
     newbox.id = `colorbox${ctr}`;
+    newbox.value = ctr;
     ctr++;
     colorboxdiv.appendChild(newbox);
 })
+
+// Simple function to draw a pixel on a canvas
+function drawPixel(context, x, y, color) {
+    context.fillStyle = COLORLIST[color];
+    context.fillRect(Math.floor(x), Math.floor(y), 1, 1);
+}
+
+// Assign the click event listeners to every color box
+Array.from(document.getElementsByClassName("colorbox")).forEach(element => {
+    element.addEventListener("click", e => {
+        colorvalue = e.target.value - 1;
+        var fillcolor = e.target.style.backgroundColor;
+        drawcolor = fillcolor;
+        colorpreview.style.backgroundColor = fillcolor;
+        // console.log(colorvalue)
+    })
+});
