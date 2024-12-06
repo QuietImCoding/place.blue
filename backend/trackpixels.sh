@@ -1,4 +1,4 @@
-COLORLIST=('rgb(255, 0, 0)' 'rgb(255, 165, 0)' 'rgb(255, 255, 0)' 'rgb(0, 128, 0)' 'rgb(0, 0, 255)' 'rgb(238, 130, 238)' 'rgb(0, 0, 0)' 'rgb(255, 255, 255)')
+source colorlist.sh 
 
 function update_image() {
     while true; do
