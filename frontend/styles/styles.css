@@ -1,13 +1,30 @@
-body { 
+body {
     background-color: cadetblue;
 }
 
-#place {
-    border: 10px red;
+div {
+    padding: 5px;
+    margin: 10px;
+    background-color: lightgray;
+    border: 4px double darkgray;
+}
+
+div #place {
+    box-sizing: border-box;
+    border: 5px ridge gold;
     background-color: white;
     height: 500px;
     width: 500px;
+    margin-left: 5px;
 }
+
+#heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    background-color: beige;
+}
+
 
 #magnifier {
     border: 5px ridge black;
@@ -19,44 +36,59 @@ body {
 }
 
 h1 {
-    display: inline
+    display: inline-block;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-weight: 800;
+    font-size: 3em;
+    text-align: center;
 }
 
 .colorbox {
     display: inline-block;
     background-color: black;
     border: 5px ridge gold;
-    width: 50px;
-    height: 50px;
+    width: 35px;
+    height: 35px;
+    margin-bottom: 10px;
+    margin-right: 5px;
 }
 
 
 .col-left {
     float: left;
-    max-width: 500px;
+    max-width: 510px;
 }
+
 .col-right {
     float: right
 }
-input[type="text"], input[type="radio"]{
-    display:block;
+
+input[type="text"],
+input[type="radio"] {
+    display: block;
     width: inherit;
 }
+
 #controls {
-    padding: 2em 0em 2em 0em;
+    background-color: beige;
+    padding: 2em;
+    width: inherit;
 }
+
 #login {
     background-color: aqua;
     width: 200px;
     padding: 4em;
     word-wrap: normal;
 }
+
 #manualinput {
     background-color: coral;
     width: 200px;
     padding: 4em;
     word-wrap: normal;
 }
+
 .inrow {
     display: inline;
 }

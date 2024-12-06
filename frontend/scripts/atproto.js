@@ -191,7 +191,7 @@ othersubscription.onmessage = async (e) => {
   if ((msgData.type = "com" && msgData.kind == "commit")) {
     let record = msgData.commit.record;
     if (record && "text" in record) {
-      let color = record.text.length % 8;
+      let color = record.text.length % COLORLIST.length;
       let lcount = {};
       record.text.split("").forEach((l) => {
         if (lcount[l]) lcount[l] += 1;
