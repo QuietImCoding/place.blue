@@ -30,13 +30,20 @@ function authenticatedATMessage(auth, target, content = null, method="POST") {
     let params = method == "GET" ? "?"+(new URLSearchParams(content)).toString() : ""
     console.log(`GET REQUEST WITH PARAMS ${params}`)
     return (
-        fetch( target + params , {
+        fetch( target + params ,
+           content == null ? {
             method: method,
-            body: method == "GET" ? null : JSON.stringify(content),
             headers: {
                 "Content-type": "application/json; charset=UTF-8",
                 Authorization: "Bearer " + auth,
-             },
+             } 
+            } : {
+              method: method,
+              body: method == "GET" ? null : JSON.stringify(content),
+              headers: {
+                  "Content-type": "application/json; charset=UTF-8",
+                  Authorization: "Bearer " + auth,
+               },
     }).then((response) => response.json())
 )
 }
