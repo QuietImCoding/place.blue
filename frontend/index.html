@@ -13,16 +13,6 @@
       <canvas id="place"></canvas>
       <canvas id="magnifier"></canvas>
       <div id="controls" class="wrap"></div>
-      <!-- pixel history area -->
-      <div
-        class="wrap"
-        style="background-color: darkseagreen; padding: 4em"
-      >
-        <h2>Your Past Pixels</h2>
-        <p>Hover over the boxes to display the notes below:</p>
-        <p id="historynote"></p>
-        <div class="wrap" id="pixelhistory"></div>
-      </div>
     </div>
     <!-- MAGNIFIER SETTINGS -->
     <div class="col-left wrap">
@@ -49,6 +39,7 @@
           value="90"
         />
       </div>
+      <!-- LEAVE A NOTE -->
       <div style="background-color: azure; padding: 4em">
         <h2>Leave a note with your pixels</h2>
         <p>
@@ -63,6 +54,13 @@
           rows="10"
           maxlength="300"
         ></textarea>
+      </div>
+      <!-- pixel history area -->
+      <div class="wrap" style="background-color: darkseagreen; padding: 4em">
+        <h2>Your Past Pixels</h2>
+        <p>Hover over the boxes to display the notes below:</p>
+        <p id="historynote"></p>
+        <div class="wrap" id="pixelhistory"></div>
       </div>
     </div>
     <!-- Alternative Stream Toggle -->
@@ -84,7 +82,8 @@
         </fieldset>
       </div>
       <!-- THE EVENT STREAM -->
-      <div class="wrap"
+      <div
+        class="wrap"
         style="background-color: burlywood; padding: 4em; max-width: initial"
       >
         <h2>Event Stream</h2>
@@ -102,7 +101,7 @@
     </div>
     <!-- LOGIN SECTION -->
     <div class="col-left wrap nomagnify">
-      <div id="login" class=" wrap">
+      <div id="login" class="wrap">
         <h2>Atproto Credentials</h2>
         <p>Please use an app password rather than the main one</p>
         <fieldset>
@@ -136,6 +135,7 @@
         <button id="push">send pixel</button>
       </div>
     </div>
+    <!-- Fixed footer with fun badges -->
     <footer>
       <a href="https://bsky.app/profile/did:plc:hsqwcidfez66lwm3gxhfv5in">
         <img
