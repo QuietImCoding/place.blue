@@ -99,13 +99,14 @@ async function listAllPixels() {
     let lastnote = ""
     pixeldata.forEach( record => {
         let pixelbox = document.createElement("li");
+        pixelbox.classList.add("pixelrecord");
         pixelbox.style.backgroundColor = COLORLIST[record.value.color];
-        pixelbox.width = 10;
-        pixelbox.height = 10;
-        pixelbox.style.display = "inline-block";
-        pixelbox.style.padding = "20px";
+        pixelbox.value = blocksize;
+        pixelbox.setAttribute("note", record.value.note);
+        pixelbox.style.width = `${10 * blocksize}px`;
+        //pixelbox.style.padding = "20px";
         if ( record.value.color != lastcolor || record.value.note != lastnote  ) {
-            if (blocksize > 1) pixelbox.innerText = record.value.note; 
+            pixelbox.innerHTML = `<span class="highlighted">${blocksize}</span>`; 
             history.appendChild(pixelbox);
             blocksize = 1; 
             lastcolor = record.value.color;

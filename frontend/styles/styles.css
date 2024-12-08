@@ -51,6 +51,39 @@ h1 {
     margin-right: 5px;
 }
 
+#pixelhistory {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+}
+li.pixelrecord {
+    height: 50px;
+    margin: 0px;
+    max-width: 100%;
+    padding: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+span.highlighted {
+    background-color: rgba(255, 255, 255, 0.6);
+    color: black;
+    padding: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+[note]:hover::after {
+    display: block;
+    position: absolute;
+    content: attr(note);
+    border: 1px solid aliceblue;
+    background: #eee;
+    padding: .25em;
+  }
 
 .col-left {
     float: left;
