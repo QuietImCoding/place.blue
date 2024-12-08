@@ -6,6 +6,11 @@ body {
     box-shadow: 0px 0px 10px green;
 }
 
+.main {
+    user-select: none;
+    -moz-user-select: none
+}
+
 footer {
     position:fixed;
     bottom: 5px;
