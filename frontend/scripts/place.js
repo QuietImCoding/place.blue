@@ -1,9 +1,17 @@
 // Function to get the position of the cursor relative to a canvas
 function getCursorPosition(canvas, event) {
   const rect = canvas.getBoundingClientRect();
-  const x = event.clientX - rect.left;
-  const y = event.clientY - rect.top;
-  // console.log("x: " + x + " y: " + y)
+  let x, y;
+  if (event.type.includes("touch")) {
+    // console.log(event);
+    if (event.touches.length > 0) {
+      x = parseInt(event.touches[0].clientX) - rect.left;
+      y = parseInt(event.touches[0].clientY) - rect.top;
+    }
+  } else {
+    x = event.clientX - rect.left;
+    y = event.clientY - rect.top;
+  }
   return [x, y];
 }
 
@@ -32,7 +40,8 @@ function renderMagnifier(xval, yval) {
   let linGrad = magctx.createLinearGradient(offset / 2, 0, offset / 2, offset);
   linGrad.addColorStop(0, "white");
   linGrad.addColorStop(1, "black");
-
+  // DEBUG STATMENT!! I HATE MOBILE!!
+  // console.log(`Rendering magnifier at ${xval}, ${yval}, with resolution ${res} and division ${division}`)
   let region = ctx.getImageData(xval - res, yval - res, division, division);
   const data = region.data;
   for (let x = 0; x < division; x++) {
@@ -60,21 +69,41 @@ function renderMagnifier(xval, yval) {
 
 function scaleCanvas() {}
 
-// When mouse moved, render the magnifier and animate it
-window.addEventListener("mousemove", (e) => {
+function moveMagnifier(e) {
   let [x, y] = getCursorPosition(canvas, e);
+  console.log(x, y)
+  if (e.type == "mousemove") {
+    magnifier.animate(
+      {
+        left: `${e.clientX}px`,
+        top: `${e.clientY}px`,
+      },
+      { duration: 300, fill: "forwards" }
+    );
+  } else if (e.type == "touchmove" ) {
+    let touch = e.touches[0];
+    magnifier.animate(
+      {
+        left: `${touch.clientX}px`,
+        top: `${touch.clientY}px`,
+      },
+      { duration: 300, fill: "forwards" }
+    );
+  }
   renderMagnifier(x, y);
-  magnifier.animate(
-    {
-      left: `${e.clientX}px`,
-      top: `${e.clientY}px`,
-    },
-    { duration: 300, fill: "forwards" }
-  );
+  
   animating = true;
   setTimeout(() => (animating = false), 300);
   magnifier.style.left = `${e.clientX}px`;
   magnifier.style.top = `${e.clientY}px`;
+}
+
+// When mouse moved, render the magnifier and animate it
+window.addEventListener("mousemove", (e) => {
+  moveMagnifier(e)
+});
+window.addEventListener("touchmove", (e) => {
+  moveMagnifier(e)
 });
 
 /*
@@ -98,8 +127,8 @@ document.getElementById("push").addEventListener("click", (e) => {
 });
 
 function sendPixel(e) {
+  let [x, y] = getCursorPosition(canvas, e);
   if (jwt) {
-    [x, y] = getCursorPosition(canvas, e);
     publishPixel(
       Math.floor(x),
       Math.floor(y),
@@ -125,6 +154,9 @@ magnifier.addEventListener("touchend", (e) => {
   sendPixel(e);
   magnifier.hidden = true;
 });
+window.addEventListener("touchend", e => {
+  magnifier.hidden = true;
+})
 
 // Load Image from the server and fill canvas
 let testimg = new Image();
