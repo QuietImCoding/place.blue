@@ -15,23 +15,6 @@ function getCursorPosition(canvas, event) {
   return [x, y];
 }
 
-// Function to publish pixel when magnifier clicked
-magnifier.addEventListener("click", function (e) {
-  if (jwt) {
-    [x, y] = getCursorPosition(canvas, e);
-    if (x > 0 && y > 0 && x < 500 && y < 500) {
-      publishPixel(
-        Math.floor(x),
-        Math.floor(y),
-        colorvalue,
-        document.getElementById("note").value
-      );
-    }
-  } else {
-    alert("Please log in before drawing pixels");
-  }
-});
-
 // Function to magnify the detailed image
 function renderMagnifier(xval, yval) {
   let res = parseInt(document.getElementById("resolution").value);
@@ -71,7 +54,7 @@ function scaleCanvas() {}
 
 function moveMagnifier(e) {
   let [x, y] = getCursorPosition(canvas, e);
-  console.log(x, y)
+  // console.log(x, y)
   if (e.type == "mousemove") {
     magnifier.animate(
       {
@@ -80,7 +63,7 @@ function moveMagnifier(e) {
       },
       { duration: 300, fill: "forwards" }
     );
-  } else if (e.type == "touchmove" ) {
+  } else if (e.type == "touchmove") {
     let touch = e.touches[0];
     magnifier.animate(
       {
@@ -91,7 +74,7 @@ function moveMagnifier(e) {
     );
   }
   renderMagnifier(x, y);
-  
+
   animating = true;
   setTimeout(() => (animating = false), 300);
   magnifier.style.left = `${e.clientX}px`;
@@ -100,10 +83,10 @@ function moveMagnifier(e) {
 
 // When mouse moved, render the magnifier and animate it
 window.addEventListener("mousemove", (e) => {
-  moveMagnifier(e)
+  moveMagnifier(e);
 });
 window.addEventListener("touchmove", (e) => {
-  moveMagnifier(e)
+  moveMagnifier(e);
 });
 
 /*
@@ -128,15 +111,17 @@ document.getElementById("push").addEventListener("click", (e) => {
 
 function sendPixel(e) {
   let [x, y] = getCursorPosition(canvas, e);
-  if (jwt) {
-    publishPixel(
-      Math.floor(x),
-      Math.floor(y),
-      colorvalue,
-      document.getElementById("note").value
-    );
-  } else {
-    alert("Please log in before drawing pixels");
+  if (x > 0 && y > 0 && x < 500 && y < 500) {
+    if (jwt) {
+      publishPixel(
+        Math.floor(x),
+        Math.floor(y),
+        colorvalue,
+        document.getElementById("note").value
+      );
+    } else {
+      alert("Please log in before drawing pixels");
+    }
   }
 }
 
@@ -154,9 +139,9 @@ magnifier.addEventListener("touchend", (e) => {
   sendPixel(e);
   magnifier.hidden = true;
 });
-window.addEventListener("touchend", e => {
+window.addEventListener("touchend", (e) => {
   magnifier.hidden = true;
-})
+});
 
 // Load Image from the server and fill canvas
 let testimg = new Image();

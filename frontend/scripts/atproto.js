@@ -1,63 +1,87 @@
 // Function to get a jwt from a PDS
-function getToken(provider, handle, password) {
-  return ( fetch(provider + "/xrpc/com.atproto.server.createSession", {
-    method: "POST",
-    body: JSON.stringify({
-      identifier: handle,
-      password: password,
-    }),
-    headers: {
-      "Content-type": "application/json; charset=UTF-8",
-    },
-  })
-    .then((response) => response.json())
-    .then((json) => {
-      domain = provider;
-      username = json.handle;
-      did = json.did;
-      jwt = json.accessJwt;
-      refresh = json.refreshJwt;
-      authIndicator.innerText = `(logged in as ${handle})`;
-      authIndicator.style.color = "green";
-      listAllPixels()
-      setInterval(refreshToken, 60000);
-    })
-    );
+async function getToken(provider, handle, password) {
+  try {
+    res = fetch(provider + "/xrpc/com.atproto.server.createSession", {
+      method: "POST",
+      body: JSON.stringify({
+        identifier: handle,
+        password: password,
+      }),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+    });
+  } catch (error) {
+    authIndicator.innerText = `(request failed [check hostname])`;
+  }
+  return res.then((response) => {
+    if (response.ok) {
+      response.json().then((json) => {
+        domain = provider;
+        username = json.handle;
+        did = json.did;
+        jwt = json.accessJwt;
+        refresh = json.refreshJwt;
+        authIndicator.innerText = `logged in as ${handle}`;
+        authIndicator.style.color = "green";
+        listAllPixels();
+        setInterval(refreshToken, 60000);
+      });
+    } else {
+      console.log("ERROR ERROR ERRROROROROROR");
+      authIndicator.innerText = `(invalid login!!)`;
+    }
+  });
 }
 
-
-function authenticatedATMessage(auth, target, content = null, method="POST") {
-    let params = method == "GET" ? "?"+(new URLSearchParams(content)).toString() : ""
-    console.log(`GET REQUEST WITH PARAMS ${params}`)
-    return (
-        fetch( target + params ,
-           content == null ? {
-            method: method,
-            headers: {
-                "Content-type": "application/json; charset=UTF-8",
-                Authorization: "Bearer " + auth,
-             } 
-            } : {
-              method: method,
-              body: method == "GET" ? null : JSON.stringify(content),
-              headers: {
-                  "Content-type": "application/json; charset=UTF-8",
-                  Authorization: "Bearer " + auth,
-               },
-    }).then((response) => response.json())
-)
+function authenticatedATMessage(
+  auth,
+  target,
+  content = null,
+  args = { method: "POST", onerr: (e) => console.log(`error: ${e}`) }
+) {
+  let params =
+    args.method == "GET" ? "?" + new URLSearchParams(content).toString() : "";
+  console.log(`GET REQUEST WITH PARAMS ${params}`);
+  return fetch(
+    target + params,
+    content == null
+      ? {
+          method: args.method,
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            Authorization: "Bearer " + auth,
+          },
+        }
+      : {
+          method: args.method,
+          body: args.method == "GET" ? null : JSON.stringify(content),
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            Authorization: "Bearer " + auth,
+          },
+        }
+  ).then((response) => {
+    return response.ok ? response.json() : args.onerr(response);
+  });
 }
 
 // Function to refresh your jwts
 function refreshToken() {
   authenticatedATMessage(
     refresh,
-    domain + "/xrpc/com.atproto.server.refreshSession"
+    domain + "/xrpc/com.atproto.server.refreshSession",
+    {
+      onerr: (r) => {
+        authIndicator.style.color = "red";
+        authIndicator.innerText = "(unable to refresh session)";
+      },
+    }
   ).then((json) => {
-      jwt = json.accessJwt;
-      refresh = json.refreshJwt;
-      console.log("REFRESHED JWT");
-    });
+    jwt = json.accessJwt;
+    refresh = json.refreshJwt;
+    console.log("REFRESHED JWT");
+  });
 }
 
 // Function to generate resource ID
@@ -71,81 +95,76 @@ function generateTID() {
 }
 
 async function listPixels(nextcursor = null) {
-    
-    return authenticatedATMessage(
-        jwt, 
-        domain + "/xrpc/com.atproto.repo.listRecords", 
-        nextcursor != null ? {
-            repo: did, 
-            collection: "blue.place.pixel",
-            limit: 100,
-            cursor: nextcursor,
-        } : {
-            repo: did, 
-            collection: "blue.place.pixel",
-            limit: 100,
-        }, 
-        "GET"
-    )
+  return authenticatedATMessage(
+    jwt,
+    domain + "/xrpc/com.atproto.repo.listRecords",
+    nextcursor != null
+      ? {
+          repo: did,
+          collection: "blue.place.pixel",
+          limit: 100,
+          cursor: nextcursor,
+        }
+      : {
+          repo: did,
+          collection: "blue.place.pixel",
+          limit: 100,
+        },
+    { method: "GET" }
+  );
 }
 
 async function listAllPixels() {
-    let response = await listPixels();
-    let pixeldata = Array.from(response.records);
-    while (response.records.length > 0) {
-        console.log(response.records)
-        response = await listPixels(response.cursor)
-        if (response.records.length > 0) {
-            pixeldata = pixeldata.concat(Array.from(response.records));
-        }
+  let response = await listPixels();
+  let pixeldata = Array.from(response.records);
+  while (response.records.length > 0) {
+    console.log(response.records);
+    response = await listPixels(response.cursor);
+    if (response.records.length > 0) {
+      pixeldata = pixeldata.concat(Array.from(response.records));
     }
-    console.log(pixeldata);
-    let history = document.getElementById("pixelhistory");
-    let lastcolor = "";
-    let blocksize = 1;
-    let lastnote = ""
-    pixeldata.forEach( record => {
-        let pixelbox = document.createElement("li");
-        pixelbox.classList.add("pixelrecord");
-        pixelbox.style.backgroundColor = COLORLIST[record.value.color];
-        pixelbox.value = blocksize;
-        if (record.value.note.length > 0) pixelbox.setAttribute("note", record.value.note);
-        pixelbox.style.width = `${20 * Math.floor(Math.sqrt(blocksize))}px`;
-        if ( record.value.color != lastcolor || record.value.note != lastnote  ) {
-            pixelbox.innerHTML = `<span class="highlighted">${blocksize}</span>`; 
-            history.appendChild(pixelbox);
-            blocksize = 1; 
-            lastcolor = record.value.color;
-            lastnote = record.value.note;
-        } else {
-            blocksize += 1; 
-        }
-    })
+  }
+  console.log(pixeldata);
+  let history = document.getElementById("pixelhistory");
+  let lastcolor = "";
+  let blocksize = 1;
+  let lastnote = "";
+  pixeldata.forEach((record) => {
+    let pixelbox = document.createElement("li");
+    pixelbox.classList.add("pixelrecord");
+    pixelbox.style.backgroundColor = COLORLIST[record.value.color];
+    pixelbox.value = blocksize;
+    if (record.value.note.length > 0)
+      pixelbox.setAttribute("note", record.value.note);
+    pixelbox.style.width = `${20 * Math.floor(Math.sqrt(blocksize))}px`;
+    if (record.value.color != lastcolor || record.value.note != lastnote) {
+      pixelbox.innerHTML = `<span class="highlighted">${blocksize}</span>`;
+      history.appendChild(pixelbox);
+      blocksize = 1;
+      lastcolor = record.value.color;
+      lastnote = record.value.note;
+    } else {
+      blocksize += 1;
+    }
+  });
 }
 
 // Just put some json on the server they said
 // it will be fun, they said (they is David Buchanan)
 function publishPixel(xval, yval, cval, text = null) {
-    authenticatedATMessage(
-        jwt,
-        domain + "/xrpc/com.atproto.repo.putRecord",
-        {
-            repo: did,
-            collection: "blue.place.pixel",
-            rkey: generateTID(),
-            record: {
-              x: xval,
-              y: yval,
-              color: cval,
-              note: text,
-              createdAt: new Date().toISOString(),
-            },
-          }
-    ).then(json => console.log(json));
+  authenticatedATMessage(jwt, domain + "/xrpc/com.atproto.repo.putRecord", {
+    repo: did,
+    collection: "blue.place.pixel",
+    rkey: generateTID(),
+    record: {
+      x: xval,
+      y: yval,
+      color: cval,
+      note: text,
+      createdAt: new Date().toISOString(),
+    },
+  }).then((json) => console.log(json));
 }
-
-
-
 
 // tries to get username for a DID
 async function didLookup(queryDID) {
@@ -208,7 +227,7 @@ async function pushEvent(
     eventbox.prepend(eventLabel);
     repeatCount = 1;
     prevDID = eventdid;
-    prevNote = text; 
+    prevNote = text;
     prevColor = color;
   } else {
     eventbox.firstChild.querySelector(
