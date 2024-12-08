@@ -31,10 +31,18 @@ def quantize_img(img, pal):
     return(img.quantize(palette = palIm, dither=Image.Dither.NONE))
 #imgpalette = ImagePalette.ImagePalette(mode="RGBA", palette=COLORLIST)
 
-with Image.open("../frontend/images/testgradient.png") as im:
+def gen_stamp(img: Image, outfile: str): 
+    w, h = img.size
+    pix = img.getdata()
+    with open(outfile, 'w', encoding="utf8") as of: 
+        for p in range(len(pix)): 
+            of.write(f"{p % w} {p // w} {pix[p]}\n")
+
+with Image.open("../scripts/stamps/tinytinyrat.png") as im:
     print(im.mode)
     im = quantize_img(im, palette)
     newim = im.convert('P')
     newim.putpalette(palette)
     newim.save("palletized.png", "PNG", optimize=1)#, bits=4)
+    gen_stamp(newim, "../scripts/stamps/sprayrat.stamp")
 

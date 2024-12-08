@@ -2,7 +2,7 @@
     "$type": "blue.place.pixel",
     "color": COLOR,
     "createdAt": "DATE",
-    "note": "TASTE THE RAINBOW, NOT THE VOID",
+    "note": "COMMENT",
     "x": XCOR,
     "y": YCOR
 }

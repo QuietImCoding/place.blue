@@ -4,9 +4,8 @@
 import json
 from httpx_ws import connect_ws
 from PIL import Image, ImageDraw, ImageColor
-from PIL import ImagePalette
 from datetime import datetime as dt
-
+import queue, threading
 
 COLORLIST = [
     "#000000",
@@ -31,10 +30,33 @@ BSKY_JETSTREAM = (
     "wss://jetstream1.us-west.bsky.network/subscribe?wantedCollections=blue.place.pixel"
 )
 
-palette = list(sum([ImageColor.getcolor(col, "RGB") for col in COLORLIST], ()))
-palette += [255, 238, 217]  ## Yellow grid color
-palette += [241, 246, 255]  ## Blue Grid Color
+q = queue.Queue()
+
 lastcolor = ""
+def process_messages():
+    while True: 
+        res = q.get()
+        global lastcolor, COLORLIST
+        record = res["commit"]["record"]
+        colorindex = int(record["color"])
+        color = COLORLIST[int(record["color"])]
+        note = record["note"]
+        x = record["x"]
+        y = record["y"]
+        if x > 0 and x < 500 and y > 0 and y < 500:
+            draw.point([(x, y)], fill=color)
+            im.save("base.png", "PNG", optimize=1)
+            if color != lastcolor:
+                im.save(
+                    f"snapshots/{str(dt.today()).split(' ', maxsplit=1)[0]}-block{colorindex}.png",
+                    optimize=1
+                )
+                lastcolor = color
+        print(f"{color} pixel at [{x}, {y}], provided note: {note}")
+        q.task_done()
+
+## we do a little threading... this will kill the project i can feel it
+threading.Thread(target=process_messages, daemon=True).start()
 
 with connect_ws(BSKY_JETSTREAM) as ws:
     with Image.open("base.png") as im:
@@ -42,19 +64,5 @@ with connect_ws(BSKY_JETSTREAM) as ws:
         while True:
             res = json.loads(ws.receive_text())
             if res["kind"] == "commit":
-                record = res["commit"]["record"]
-                colorindex = int(record["color"])
-                color = COLORLIST[int(record["color"])]
-                note = record["note"]
-                x = record["x"]
-                y = record["y"]
-                if x > 0 and x < 500 and y > 0 and y < 500:
-                    draw.point([(x, y)], fill=color)
-                    im.save("base.png", "PNG", optimize=1)
-                    if color != lastcolor:
-                        im.save(
-                            f"snapshots/{str(dt.today()).split(' ', maxsplit=1)[0]}-block{colorindex}.png",
-                            optimize=1
-                        )
-                        lastcolor = color
-                print(f"{color} pixel at [{x}, {y}], provided note: {note}")
+                q.put(res)
+        q.join()
