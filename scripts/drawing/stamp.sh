@@ -14,7 +14,8 @@ function stamp() {
             -e "s/XCOR/$((x + $1))/g" \
             -e "s/YCOR/$((y + $2))/g" >record.json
         goat record create -n record.json &   
-        if [[ $((lineno % 8)) -eq 0]]; then
+        if [[ $((lineno % 8)) == 0 ]]
+        then
             echo "waiting"
             wait
         fi 

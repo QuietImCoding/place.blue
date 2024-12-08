@@ -87,7 +87,7 @@ document.getElementById("push").addEventListener("click", (e) => {
 
 // Load Image from the server and fill canvas
 let testimg = new Image();
-testimg.src = `/base.png?nocache=${new Date().getTime()}`;
+testimg.src = `base.png?nocache=${new Date().getTime()}`;
 testimg.addEventListener("load", () => {
   ctx.drawImage(testimg, 0, 0);
 });
