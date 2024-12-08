@@ -109,7 +109,7 @@ async function listAllPixels() {
         pixelbox.classList.add("pixelrecord");
         pixelbox.style.backgroundColor = COLORLIST[record.value.color];
         pixelbox.value = blocksize;
-        pixelbox.setAttribute("note", record.value.note);
+        if (record.value.note.length > 0) pixelbox.setAttribute("note", record.value.note);
         pixelbox.style.width = `${10 * blocksize}px`;
         //pixelbox.style.padding = "20px";
         if ( record.value.color != lastcolor || record.value.note != lastnote  ) {
