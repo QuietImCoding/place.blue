@@ -1,0 +1,8 @@
+{
+  "$type": "blue.place.pixel",
+  "color": COLOR,
+  "createdAt": "DATE",
+  "note": "YOU ARE GETTING LOST IN THE SPIRAL",
+  "x": XCOR,
+  "y": YCOR
+}

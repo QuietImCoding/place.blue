@@ -1,6 +1,5 @@
 from PIL import Image, ImageDraw, ImageColor
 from PIL import ImagePalette
-import random
 
 COLORLIST = [
     "#000000",
@@ -32,7 +31,7 @@ def quantize_img(img, pal):
     return(img.quantize(palette = palIm, dither=Image.Dither.NONE))
 #imgpalette = ImagePalette.ImagePalette(mode="RGBA", palette=COLORLIST)
 
-with Image.open("pls.png") as im:
+with Image.open("../frontend/images/testgradient.png") as im:
     print(im.mode)
     im = quantize_img(im, palette)
     newim = im.convert('P')

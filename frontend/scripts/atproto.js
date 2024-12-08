@@ -102,6 +102,8 @@ async function didLookup(queryDID) {
   return await response;
 }
 
+let prevDID, prevNote, prevColor;
+let repeatCount = 1;
 // THE BIG PUSH
 async function pushEvent(
   rid,
@@ -111,28 +113,39 @@ async function pushEvent(
   text = null,
   blueplace = true
 ) {
+  if (eventdid != prevDID || text != prevNote || color != prevColor) {
+    let eventLabel = document.createElement("p");
+    eventLabel.id = rid;
+    eventLabel.classList.add(eventdid, `color${color}`);
+    let colortag = document.createElement("span");
+    colortag.style.backgroundColor = COLORLIST[color];
+    colortag.innerText = color;
+    let septag = document.createElement("hr");
+    let texttag;
 
-  let eventLabel = document.createElement("p");
-  let colortag = document.createElement("span");
-  colortag.style.backgroundColor = COLORLIST[color];
-  colortag.innerText = color;
-  let septag = document.createElement("hr");
-  let texttag;
+    if (text != null) {
+      texttag = document.createElement("p");
+      texttag.innerText = `Post text was: ${
+        text.substring(0, 100) + (text.length > 100 ? "..." : "")
+      }.`;
+    }
+    eventLabel.innerHTML = blueplace
+      ? `<a href="https://pdsls.dev/at/${eventdid}/blue.place.pixel/${rid}">${eventdid}:</a> created <span class="pcount">pixel</span> at (${location.toString()}) with color `
+      : `<a href="https://bsky.app/profile/${eventdid}/post/${rid}">${eventdid}:</a> created <span class="pcount">pixel</span> at (${location.toString()}) with color `;
+    eventLabel.appendChild(colortag);
+    eventLabel.appendChild(texttag);
+    eventLabel.appendChild(septag);
 
-  if (text != null) {
-    texttag = document.createElement("p");
-    texttag.innerText = `Post text was: ${
-      text.substring(0, 100) + (text.length > 100 ? "..." : "")
-    }.`;
+    eventbox.prepend(eventLabel);
+    repeatCount = 0;
+    prevDID = eventdid;
+    prevNote = text; 
+    prevColor = color;
+  } else {
+    eventbox.firstChild.querySelector(
+      ".pcount"
+    ).innerText = `${++repeatCount} pixels`;
   }
-  eventLabel.innerHTML = blueplace
-    ? `<a href="https://pdsls.dev/at/${eventdid}/blue.place.pixel/${rid}">${eventdid}:</a> created pixel at (${location.toString()}) with color `
-    : `<a href="https://bsky.app/profile/${eventdid}/post/${rid}">${eventdid}:</a> created pixel at (${location.toString()}) with color `;
-  eventLabel.appendChild(colortag);
-  eventLabel.appendChild(texttag);
-  eventLabel.appendChild(septag);
-
-  eventbox.prepend(eventLabel);
   if (eventbox.childElementCount > 10) {
     eventbox.lastChild.remove();
   }
@@ -159,7 +172,6 @@ subscription.onmessage = async (e) => {
     console.log(
       `User: ${msgData.did} created a type ${record.color} pixel at (${record.x}, ${record.y})`
     );
-    console.log(msgData);
     if (!altstream) {
       drawPixel(ctx, record.x, record.y, record.color);
       let userID = await didLookup(msgData.did);
