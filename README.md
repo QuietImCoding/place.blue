@@ -26,4 +26,4 @@ I shall hold myself accountable to implementing at least a few of these
 - [ ] (BUG !) - Add some sort of indicator for failed login
 - [ ] Logout button, to allow you to login as someone else... in case you got rate limited ... couldn't b me
 - [ ] (BACKEND) - Log all incoming pixels to allow redrawing the canvas from history
-- [ ] (FRONTEND) - Add a pane where you can see your past pixel contributions... Grouped like in the event list 
+- [x] (FRONTEND) - Add a pane where you can see your past pixel contributions... Grouped like in the event list 
