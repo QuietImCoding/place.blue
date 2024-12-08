@@ -2,7 +2,13 @@ body {
     background-color: cadetblue;
 }
 
-div {
+footer {
+    position:fixed;
+    bottom: 5px;
+    padding: 5px;
+}
+
+.wrap {
     padding: 5px;
     margin: 10px;
     background-color: lightgray;

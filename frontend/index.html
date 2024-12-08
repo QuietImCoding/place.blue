@@ -6,27 +6,27 @@
   <body>
     <!-- MAIN PARTY AREA -->
     <div class="wrap col-left">
-      <div id="heading" class="container nomagnify">
-        <div id="colorpreview" class="colorbox"></div>
+      <div id="heading" class="wrap nomagnify">
+        <div id="colorpreview" class="wrap colorbox"></div>
         <h1>Welcome to the Blue Place</h1>
       </div>
       <canvas id="place"></canvas>
       <canvas id="magnifier"></canvas>
-      <div id="controls" class="nomagnify"></div>
+      <div id="controls" class="wrap"></div>
       <!-- pixel history area -->
       <div
-        class="nomagnify"
+        class="wrap"
         style="background-color: darkseagreen; padding: 4em"
       >
         <h2>Your Past Pixels</h2>
         <p>Hover over the boxes to display the notes below:</p>
         <p id="historynote"></p>
-        <div id="pixelhistory"></div>
+        <div class="wrap" id="pixelhistory"></div>
       </div>
     </div>
     <!-- MAGNIFIER SETTINGS -->
-    <div class="col-left nomagnify">
-      <div style="background-color: pink; padding: 4em">
+    <div class="col-left wrap">
+      <div class="wrap" style="background-color: pink; padding: 4em">
         <h2>Magnifier settings</h2>
         <label for="resolution">Pixels to show in the magnifier:</label>
         <input
@@ -66,8 +66,8 @@
       </div>
     </div>
     <!-- Alternative Stream Toggle -->
-    <div class="col-left nomagnify">
-      <div style="background-color: cornsilk; padding: 4em">
+    <div class="col-left wrap">
+      <div class="wrap" style="background-color: cornsilk; padding: 4em">
         <h2>Toggle Alternative Pixel Stream</h2>
         <fieldset>
           <legend>Select Pixel Source</legend>
@@ -84,7 +84,7 @@
         </fieldset>
       </div>
       <!-- THE EVENT STREAM -->
-      <div
+      <div class="wrap"
         style="background-color: burlywood; padding: 4em; max-width: initial"
       >
         <h2>Event Stream</h2>
@@ -101,12 +101,14 @@
       </div>
     </div>
     <!-- LOGIN SECTION -->
-    <div class="col-right">
-      <div id="login" class="nomagnify">
+    <div class="col-left wrap nomagnify">
+      <div id="login" class=" wrap">
         <h2>Atproto Credentials</h2>
         <p>Please use an app password rather than the main one</p>
         <fieldset>
-          <legend style="color:red; font-weight: bold" id="account">(not logged in)</legend>
+          <legend style="color: red; font-weight: bold" id="account">
+            (not logged in)
+          </legend>
           <input
             type="text"
             name="provider"
@@ -125,7 +127,7 @@
         </fieldset>
       </div>
       <!-- Manually submit a pixel -->
-      <div class="nomagnify" id="manualinput">
+      <div class="wrap" id="manualinput">
         <h2>Manual pixel input</h2>
         <input class="inrow" type="text" name="x" id="x" placeholder="x" />
         <input class="inrow" type="text" name="y" id="y" placeholder="y" />
@@ -134,6 +136,14 @@
         <button id="push">send pixel</button>
       </div>
     </div>
+    <footer>
+      <a href="https://bsky.app/profile/did:plc:hsqwcidfez66lwm3gxhfv5in">
+        <img
+          src="images/badge/goose_badge.gif"
+          alt="tiny pixelart badge of a goose honking"
+        />
+      </a>
+    </footer>
     <script src="scripts/base32.js"></script>
     <script src="scripts/setup.js"></script>
     <script src="scripts/atproto.js"></script>

@@ -132,10 +132,15 @@ magnifier.addEventListener("mouseup", (e) => {
   sendPixel(e);
   magnifier.hidden = true;
 });
+
 canvas.addEventListener("touchstart", (e) => {
   magnifier.hidden = false;
 });
 magnifier.addEventListener("touchend", (e) => {
+  sendPixel(e);
+  magnifier.hidden = true;
+});
+canvas.addEventListener("touchend", (e) => {
   sendPixel(e);
   magnifier.hidden = true;
 });
