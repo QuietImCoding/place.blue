@@ -6,6 +6,7 @@ canvas.height = 500;
 canvas.width = 500;
 magnifier.width=90;
 magnifier.height=90;
+magnifier.hidden=true;
 const ctx = canvas.getContext("2d", { willReadFrequently: true });
 ctx.fillStyle = "white";
 ctx.fillRect(0,0, 500, 500)

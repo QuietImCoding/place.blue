@@ -30,6 +30,10 @@ function renderMagnifier(xval, yval) {
   let res = parseInt(document.getElementById("resolution").value);
   let division = res * 2 + 1;
   let offset = magnifier.clientHeight / division;
+  let linGrad = magctx.createLinearGradient(offset / 2 , 0, offset / 2, offset)
+  linGrad.addColorStop(0, "white");
+  linGrad.addColorStop(1, "black");
+
   let region = ctx.getImageData(xval - res, yval - res, division, division);
   const data = region.data;
   for (let x = 0; x < division; x++) {
@@ -46,8 +50,17 @@ function renderMagnifier(xval, yval) {
           ? rgbColor
           : "cadetblue";
       magctx.fillRect(y * offset, x * offset, offset, offset);
+      if (x == res && y == res) {
+        magctx.strokeStyle = linGrad;
+        magctx.lineWidth=1;
+        magctx.strokeRect(y * offset, x * offset, offset, offset);
+      }
     }
   }
+}
+
+function scaleCanvas() {
+
 }
 
 // When mouse moved, render the magnifier and animate it
@@ -67,6 +80,7 @@ window.addEventListener("mousemove", (e) => {
   magnifier.style.top = `${e.clientY}px`;
 });
 
+/*
 // Events to hide and show the magnifier
 Array.from(document.querySelectorAll(".nomagnify")).forEach((e) => {
   e.addEventListener("mouseenter", () => (magnifier.hidden = true));
@@ -74,6 +88,8 @@ Array.from(document.querySelectorAll(".nomagnify")).forEach((e) => {
 Array.from(document.querySelectorAll(".nomagnify")).forEach((e) => {
   e.addEventListener("mouseleave", () => (magnifier.hidden = false));
 });
+*/
+
 
 // Button to publish the pixels
 document.getElementById("push").addEventListener("click", (e) => {
@@ -84,6 +100,31 @@ document.getElementById("push").addEventListener("click", (e) => {
     document.getElementById("note").value
   );
 });
+
+function sendPixel(e) {
+  if (jwt) {
+    [x, y] = getCursorPosition(canvas, e);
+    publishPixel(
+      Math.floor(x),
+      Math.floor(y),
+      colorvalue,
+      document.getElementById("note").value
+    );
+  } else {
+    alert("Please log in before drawing pixels");
+  }
+}
+
+canvas.addEventListener("mousedown", e => { magnifier.hidden = false; })
+magnifier.addEventListener("mouseup", e => { 
+  sendPixel(e);
+  magnifier.hidden = true;
+})
+canvas.addEventListener("touchstart", e => { magnifier.hidden = false; })
+magnifier.addEventListener("touchend", e => { 
+  sendPixel(e);
+  magnifier.hidden = true;
+})
 
 // Load Image from the server and fill canvas
 let testimg = new Image();

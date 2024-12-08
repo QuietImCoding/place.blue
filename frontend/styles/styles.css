@@ -68,7 +68,7 @@ li.pixelrecord {
 }
 
 span.highlighted {
-    background-color: rgba(255, 255, 255, 0.6);
+    background-color: lightgray;
     color: black;
     padding: 5px;
     display: flex;
@@ -80,8 +80,8 @@ span.highlighted {
     display: block;
     position: absolute;
     content: attr(note);
-    border: 1px solid aliceblue;
-    background: #eee;
+    border: 2px outset black;
+    background: lightgray;
     padding: .25em;
   }
 

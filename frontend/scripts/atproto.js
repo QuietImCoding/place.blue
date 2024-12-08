@@ -110,8 +110,7 @@ async function listAllPixels() {
         pixelbox.style.backgroundColor = COLORLIST[record.value.color];
         pixelbox.value = blocksize;
         if (record.value.note.length > 0) pixelbox.setAttribute("note", record.value.note);
-        pixelbox.style.width = `${10 * blocksize}px`;
-        //pixelbox.style.padding = "20px";
+        pixelbox.style.width = `${20 * Math.floor(Math.sqrt(blocksize))}px`;
         if ( record.value.color != lastcolor || record.value.note != lastnote  ) {
             pixelbox.innerHTML = `<span class="highlighted">${blocksize}</span>`; 
             history.appendChild(pixelbox);
