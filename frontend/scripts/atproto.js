@@ -1,3 +1,8 @@
+function authStatus(status, message) {
+  authIndicator.innerText = status ? message : `(${message})`;
+  authIndicator.style.color = status ? "green" : "red";
+}
+
 // Function to get a jwt from a PDS
 async function getToken(provider, handle, password) {
   try {
@@ -12,7 +17,7 @@ async function getToken(provider, handle, password) {
       },
     });
   } catch (error) {
-    authIndicator.innerText = `(request failed [check hostname])`;
+    authStatus(false, "request failed [check hostname]");
   }
   return res.then((response) => {
     if (response.ok) {
@@ -22,16 +27,45 @@ async function getToken(provider, handle, password) {
         did = json.did;
         jwt = json.accessJwt;
         refresh = json.refreshJwt;
-        authIndicator.innerText = `logged in as ${handle}`;
-        authIndicator.style.color = "green";
+        document.cookie = `jwt=${encodeURIComponent(
+          jwt
+        )}; samesite=strict; max-age:${60 * 60 * 8}`;
+        document.cookie = `refreshToken=${encodeURIComponent(
+          refresh
+        )}; samesite=strict; max-age:${60 * 60 * 8}`;
+        document.cookie = `did=${encodeURIComponent(
+          did
+        )}; samesite=strict; max-age:${60 * 60 * 8}`;
+        document.cookie = `domain=${encodeURIComponent(
+          domain
+        )}; samesite=strict; max-age:${60 * 60 * 8}`;
+        document.cookie = `username=${encodeURIComponent(
+          username
+        )}; samesite=strict; max-age:${60 * 60 * 8}`;
+        console.log(document.cookie);
+        authStatus(true, `logged in as ${handle}`);
         listAllPixels();
         setInterval(refreshToken, 60000);
       });
     } else {
-      console.log("ERROR ERROR ERRROROROROROR");
-      authIndicator.innerText = `(invalid login!!)`;
+      authStatus(false, "invalid login");
     }
   });
+}
+
+function loginFromCookie() {
+  let cookieData = {};
+  document.cookie.split("; ").forEach((x) => {
+    let decoded = decodeURIComponent(x).split("=");
+    cookieData[decoded[0]] = decoded[1];
+  });
+  jwt = cookieData.jwt;
+  refresh = cookieData.refreshToken;
+  did = cookieData.did;
+  domain = cookieData.domain;
+  username = cookieData.username;
+  refreshToken();
+  console.log(cookieData);
 }
 
 function authenticatedATMessage(
@@ -42,7 +76,6 @@ function authenticatedATMessage(
 ) {
   let params =
     args.method == "GET" ? "?" + new URLSearchParams(content).toString() : "";
-  console.log(`GET REQUEST WITH PARAMS ${params}`);
   return fetch(
     target + params,
     content == null
@@ -71,15 +104,16 @@ function refreshToken() {
   authenticatedATMessage(
     refresh,
     domain + "/xrpc/com.atproto.server.refreshSession",
-    {
+    null,
+    { method: "POST",
       onerr: (r) => {
-        authIndicator.style.color = "red";
-        authIndicator.innerText = "(unable to refresh session)";
+        authStatus(false, "unable to refresh session");
       },
     }
   ).then((json) => {
     jwt = json.accessJwt;
     refresh = json.refreshJwt;
+    authStatus(true, `refreshed login as ${username}`);
     console.log("REFRESHED JWT");
   });
 }
@@ -118,13 +152,11 @@ async function listAllPixels() {
   let response = await listPixels();
   let pixeldata = Array.from(response.records);
   while (response.records.length > 0) {
-    console.log(response.records);
     response = await listPixels(response.cursor);
     if (response.records.length > 0) {
       pixeldata = pixeldata.concat(Array.from(response.records));
     }
   }
-  console.log(pixeldata);
   let history = document.getElementById("pixelhistory");
   let lastcolor = "";
   let blocksize = 1;

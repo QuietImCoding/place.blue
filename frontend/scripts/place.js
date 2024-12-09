@@ -67,8 +67,8 @@ function moveMagnifier(e) {
     let touch = e.touches[0];
     magnifier.animate(
       {
-        left: `${touch.clientX}px`,
-        top: `${touch.clientY}px`,
+        left: `${touch.screenX - 50}px`,
+        top: `${touch.screenY + 100}px`,
       },
       { duration: 300, fill: "forwards" }
     );
@@ -138,21 +138,29 @@ canvas.addEventListener("touchstart", (e) => {
 });
 magnifier.addEventListener("touchend", (e) => {
   sendPixel(e);
-  magnifier.hidden = true;
+  if (e.touches.length == 0) {
+    magnifier.hidden = true;
+  }
 });
 canvas.addEventListener("touchend", (e) => {
   sendPixel(e);
-  magnifier.hidden = true;
+  if (e.touches.length == 0) {
+    magnifier.hidden = true;
+  }
 });
 window.addEventListener("touchend", (e) => {
   magnifier.hidden = true;
 });
 
 // Load Image from the server and fill canvas
+// Use image load as an excuse to attempt to parse cookie
 let testimg = new Image();
 testimg.src = `base.png?nocache=${new Date().getTime()}`;
 testimg.addEventListener("load", () => {
   ctx.drawImage(testimg, 0, 0);
+  if (document.cookie.length > 0) {
+    loginFromCookie();
+  }
 });
 
 // Color slider
