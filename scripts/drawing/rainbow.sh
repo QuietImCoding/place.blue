@@ -4,7 +4,10 @@ function draw_pixel() {
     c=$3
     sleep 0.3
     cdate="$(date -Iseconds)"
-    cat example.json | sed -e "s/COLOR/$((c % 6 + 8))/g" -e "s/DATE/${cdate:0:19}.00z/g" -e "s/XCOR/$x/g" -e "s/YCOR/$((499 - y))/g" > record.json
+    cat example.json | sed -e "s/COMMENT/taste the rainbow/g" \
+			   -e "s/COLOR/$((c % 6 + 8))/g" \
+			   -e "s/DATE/${cdate:0:19}.00z/g" \
+			   -e "s/XCOR/$((499 - x))/g" -e "s/YCOR/$y/g" > record.json
     goat record create -n record.json &    
 }
 
