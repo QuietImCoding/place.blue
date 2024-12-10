@@ -31,7 +31,7 @@ def quantize_img(img, pal):
     return(img.quantize(palette = palIm, dither=Image.Dither.NONE))
 #imgpalette = ImagePalette.ImagePalette(mode="RGBA", palette=COLORLIST)
 
-def gen_stamp(img: Image, outfile: str, background=None, guess_background=True): 
+def gen_stamp(img: Image, outfile: str, background=None, guess_background=False): 
     w, h = img.size
     pix = img.getdata()
     if guess_background: 
@@ -41,11 +41,11 @@ def gen_stamp(img: Image, outfile: str, background=None, guess_background=True):
             if pix[p] != background: 
                 of.write(f"{p % w} {p // w} {pix[p]}\n")
 
-with Image.open("../scripts/stamps/tinytinyrat.png") as im:
+with Image.open("../scripts/stamps/badge.png") as im:
     print(im.mode)
     im = quantize_img(im, palette)
     newim = im.convert('P')
     newim.putpalette(palette)
     newim.save("palletized.png", "PNG", optimize=1)#, bits=4)
-    gen_stamp(newim, "../scripts/stamps/sprat.stamp")
+    gen_stamp(newim, "../scripts/stamps/gooseart.stamp")
 

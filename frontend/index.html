@@ -6,9 +6,15 @@
   <body>
     <!-- MAIN PARTY AREA -->
     <div class="wrap main col-left">
+
       <div id="heading" class="wrap nomagnify">
         <div id="colorpreview" class="wrap colorbox"></div>
         <h1>Welcome to the Blue Place</h1>
+      </div>
+      <div class="zooms">
+        <p>Enhance: </p>
+        <button id="enhance">enhance</button>
+        <button id="dehance">dehance</button>
       </div>
       <canvas id="place"></canvas>
       <canvas id="magnifier"></canvas>
@@ -26,7 +32,7 @@
           min="2"
           max="30"
           step="1"
-          value="6"
+          value="8"
         />
         <br />
         <label for="magsize">Size of magnifier</label>
@@ -105,24 +111,33 @@
         <h2>Atproto Credentials</h2>
         <p>Please use an app password rather than the main one</p>
         <fieldset>
-          <legend style="color: red; font-weight: bold" id="account">
-            (not logged in)
-          </legend>
-          <input
-            type="text"
-            name="provider"
-            id="provider"
-            placeholder="Login provider"
-            value="https://bsky.social"
-          />
-          <input type="text" name="handle" id="handle" placeholder="Username" />
-          <input
-            type="password"
-            name="password"
-            id="password"
-            placeholder="App Password"
-          />
-          <button id="auth">log me in</button>
+          <form action="javascript:void(0);">
+            <legend style="color: red; font-weight: bold" id="account">
+              (not logged in)
+            </legend>
+            <input
+              type="text"
+              name="provider"
+              id="provider"
+              placeholder="Login provider"
+              value="https://bsky.social"
+            />
+            <input
+              autocomplete="username"
+              type="text"
+              name="handle"
+              id="handle"
+              placeholder="Username"
+            />
+            <input
+              autocomplete="current-password"
+              type="password"
+              name="password"
+              id="password"
+              placeholder="App Password"
+            />
+            <button id="auth">log me in</button>
+          </form>
         </fieldset>
       </div>
       <!-- Manually submit a pixel -->
@@ -137,20 +152,25 @@
     </div>
     <!-- Fixed footer with fun badges -->
     <footer>
-      <img height="16px"
-          src="images/skyspin.gif"
-          alt="tiny spinning bluesky logo"
-        />
-      <a class="badge" href="https://bsky.app/profile/did:plc:hsqwcidfez66lwm3gxhfv5in">
+      <img
+        height="16px"
+        src="images/skyspin.gif"
+        alt="tiny spinning bluesky logo"
+      />
+      <a
+        class="badge"
+        href="https://bsky.app/profile/did:plc:hsqwcidfez66lwm3gxhfv5in"
+      >
         <img
           src="images/badge/goose_badge.gif"
           alt="tiny pixelart badge of a goose honking"
         />
       </a>
-      <img height="16px"
-          src="images/skyspin.gif"
-          alt="tiny spinning bluesky logo"
-        />
+      <img
+        height="16px"
+        src="images/skyspin.gif"
+        alt="tiny spinning bluesky logo"
+      />
     </footer>
     <script src="scripts/base32.js"></script>
     <script src="scripts/setup.js"></script>

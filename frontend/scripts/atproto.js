@@ -42,7 +42,6 @@ async function getToken(provider, handle, password) {
         document.cookie = `username=${encodeURIComponent(
           username
         )}; samesite=strict; max-age:${60 * 60 * 8}`;
-        console.log(document.cookie);
         authStatus(true, `logged in as ${handle}`);
         listAllPixels();
         setInterval(refreshToken, 60000);
@@ -54,18 +53,19 @@ async function getToken(provider, handle, password) {
 }
 
 function loginFromCookie() {
-  let cookieData = {};
-  document.cookie.split("; ").forEach((x) => {
-    let decoded = decodeURIComponent(x).split("=");
-    cookieData[decoded[0]] = decoded[1];
-  });
-  jwt = cookieData.jwt;
-  refresh = cookieData.refreshToken;
-  did = cookieData.did;
-  domain = cookieData.domain;
-  username = cookieData.username;
-  refreshToken();
-  console.log(cookieData);
+  if (document.cookie.length > 0) {
+    let cookieData = {};
+    document.cookie.split("; ").forEach((x) => {
+      let decoded = decodeURIComponent(x).split("=");
+      cookieData[decoded[0]] = decoded[1];
+    });
+    jwt = cookieData.jwt;
+    refresh = cookieData.refreshToken;
+    did = cookieData.did;
+    domain = cookieData.domain;
+    username = cookieData.username;
+    refreshToken();
+  }
 }
 
 function authenticatedATMessage(
@@ -105,7 +105,8 @@ function refreshToken() {
     refresh,
     domain + "/xrpc/com.atproto.server.refreshSession",
     null,
-    { method: "POST",
+    {
+      method: "POST",
       onerr: (r) => {
         authStatus(false, "unable to refresh session");
       },
@@ -195,7 +196,7 @@ function publishPixel(xval, yval, cval, text = null) {
       note: text,
       createdAt: new Date().toISOString(),
     },
-  }).then((json) => console.log(json));
+  }); // .then((json) => console.log(json));
 }
 
 // tries to get username for a DID

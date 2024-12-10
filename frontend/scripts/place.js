@@ -16,8 +16,7 @@ function getCursorPosition(canvas, event) {
 }
 
 // Function to magnify the detailed image
-function renderMagnifier(xval, yval) {
-  let res = parseInt(document.getElementById("resolution").value);
+function renderMagnifier(xval, yval, res) {
   let division = res * 2 + 1;
   let offset = magnifier.clientHeight / division;
   let linGrad = magctx.createLinearGradient(offset / 2, 0, offset / 2, offset);
@@ -55,38 +54,41 @@ function scaleCanvas() {}
 function moveMagnifier(e) {
   let [x, y] = getCursorPosition(canvas, e);
   // console.log(x, y)
-  if (e.type == "mousemove") {
-    magnifier.animate(
-      {
-        left: `${e.clientX}px`,
-        top: `${e.clientY}px`,
-      },
-      { duration: 300, fill: "forwards" }
+  if (magmode == "local") {
+    if (e.type == "mousemove") {
+      magnifier.animate(
+        {
+          left: `${e.clientX}px`,
+          top: `${e.clientY}px`,
+        },
+        { duration: 300, fill: "forwards" }
+      );
+    } else if (e.type == "touchmove") {
+      let touch = e.touches[0];
+      magnifier.animate(
+        {
+          left: `${touch.screenX - 50}px`,
+          top: `${touch.screenY + 50}px`,
+        },
+        { duration: 300, fill: "forwards" }
+      );
+    }
+    renderMagnifier(
+      x,
+      y,
+      parseInt(document.getElementById("resolution").value)
     );
-  } else if (e.type == "touchmove") {
-    let touch = e.touches[0];
-    magnifier.animate(
-      {
-        left: `${touch.screenX - 50}px`,
-        top: `${touch.screenY + 100}px`,
-      },
-      { duration: 300, fill: "forwards" }
-    );
+    magnifier.style.left = `${e.clientX}px`;
+    magnifier.style.top = `${e.clientY}px`;
   }
-  renderMagnifier(x, y);
-
-  animating = true;
-  setTimeout(() => (animating = false), 300);
-  magnifier.style.left = `${e.clientX}px`;
-  magnifier.style.top = `${e.clientY}px`;
 }
 
 // When mouse moved, render the magnifier and animate it
 window.addEventListener("mousemove", (e) => {
-  moveMagnifier(e);
+  if (magmode == "local") moveMagnifier(e);
 });
 window.addEventListener("touchmove", (e) => {
-  moveMagnifier(e);
+  if (magmode == "local") moveMagnifier(e);
 });
 
 /*
@@ -128,9 +130,12 @@ function sendPixel(e) {
 canvas.addEventListener("mousedown", (e) => {
   magnifier.hidden = false;
 });
+
 magnifier.addEventListener("mouseup", (e) => {
   sendPixel(e);
-  magnifier.hidden = true;
+  if (magmode == "local") {
+    magnifier.hidden = true;
+  }
 });
 
 canvas.addEventListener("touchstart", (e) => {
@@ -138,18 +143,20 @@ canvas.addEventListener("touchstart", (e) => {
 });
 magnifier.addEventListener("touchend", (e) => {
   sendPixel(e);
-  if (e.touches.length == 0) {
+  if (e.touches.length == 0 && magmode == "local") {
     magnifier.hidden = true;
   }
 });
 canvas.addEventListener("touchend", (e) => {
   sendPixel(e);
-  if (e.touches.length == 0) {
+  if (e.touches.length == 0 && magmode == "local") {
     magnifier.hidden = true;
   }
 });
 window.addEventListener("touchend", (e) => {
-  magnifier.hidden = true;
+  if (magmode == "local") {
+    magnifier.hidden = true;
+  }
 });
 
 // Load Image from the server and fill canvas
@@ -177,3 +184,61 @@ document.getElementById("magsize").addEventListener("change", (e) => {
   magnifier.height = parseInt(e.target.value);
   magnifier.width = parseInt(e.target.value);
 });
+
+let magzoom;
+function enhance(e) {
+  magnifier.hidden = false;
+  magnifier.animate(
+    {
+      left: `${e.clientX}px`,
+      top: `${e.clientY}px`,
+      borderRadius: "0px",
+      width: "100px",
+      height: "100px",
+    },
+    { duration: 300, fill: "forwards" }
+  );
+  document.getElementById("resolution").value = 50;
+
+  magzoom = magnifier.addEventListener("mousedown", (e) => {
+    if (magmode == "local") {
+      magmode = "global";
+
+      magnifier.animate(
+        {
+          left: `${canvas.offsetLeft + canvas.offsetWidth / 2}px`,
+          top: `${canvas.offsetTop + canvas.offsetWidth / 2}px`,
+          width: "500px",
+          height: "500px",
+          clientHeight: 500,
+          clientWidth: 500,
+        },
+        { duration: 300, fill: "forwards" }
+      );
+      // setTimeout(() => renderMagnifier(e.clientX, e.clientY, 100), 300);
+
+    }
+  });
+}
+
+function dehance(e) {
+  magmode = "local";
+  magnifier.animate(
+    {
+      left: `${e.clientX}px`,
+      top: `${e.clientY}px`,
+      borderRadius: "100%",
+      clientHeight: parseInt(e.target.value),
+      clientWidth: parseInt(e.target.value),
+      height: `${document.getElementById("magsize").value}px`,
+      width: `${document.getElementById("magsize").value}px`,
+    },
+    { duration: 300, fill: "forwards" }
+  );
+  if (magzoom) magnifier.removeEventListener(magzoom);
+  document.getElementById("resolution").value = 8;
+  setTimeout(() => ((magnifier.hidden = true)), 250);
+}
+
+document.getElementById("enhance").addEventListener("click", enhance);
+document.getElementById("dehance").addEventListener("click", dehance);
