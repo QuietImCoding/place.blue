@@ -16,6 +16,8 @@ body {
 
 footer {
     position:fixed;
+    display: flex;
+    align-items: center;
     bottom: 5px;
     padding: 5px;
 }
