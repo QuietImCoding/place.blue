@@ -5,7 +5,6 @@ import json
 from httpx_ws import connect_ws
 from PIL import Image, ImageDraw, ImageColor
 from datetime import datetime as dt
-import queue, threading
 
 COLORLIST = [
     "#000000",
@@ -26,43 +25,48 @@ COLORLIST = [
     "#FFCCAA",
 ]
 
-BSKY_JETSTREAM = (
-    "wss://jetstream1.us-west.bsky.network/subscribe?wantedCollections=blue.place.pixel"
-)
-
-q = queue.Queue()
+BSKY_JETSTREAM_LIST = [
+    'wss://jetstream2.us-east.bsky.network/subscribe?wantedCollections=blue.place.pixel', 
+    'wss://jetstream1.us-east.bsky.network/subscribe?wantedCollections=blue.place.pixel', 
+    'wss://jetstream2.us-west.bsky.network/subscribe?wantedCollections=blue.place.pixel', 
+    'wss://jetstream1.us-west.bsky.network/subscribe?wantedCollections=blue.place.pixel'
+]
 
 lastcolor = ""
-def process_messages():
-    while True: 
-        res = q.get()
-        global lastcolor, COLORLIST
-        record = res["commit"]["record"]
-        colorindex = int(record["color"])
-        color = COLORLIST[int(record["color"])]
-        note = record["note"]
-        x = record["x"]
-        y = record["y"]
-        if x > 0 and x < 500 and y > 0 and y < 500:
-            draw.point([(x, y)], fill=color)
-            im.save("base.png", "PNG", optimize=1)
-            if color != lastcolor:
-                im.save(
-                    f"snapshots/{str(dt.today()).split(' ', maxsplit=1)[0]}-block{colorindex}.png",
-                    optimize=1
-                )
-                lastcolor = color
-        print(f"{color} pixel at [{x}, {y}], provided note: {note}")
-        q.task_done()
+im = Image.open("base.png")
+draw = ImageDraw.Draw(im)
+
+def process_messages(res, im, draw, lastcolor):
+    record = res["commit"]["record"]
+    print(record)
+    colorindex = int(record["color"])
+    color = COLORLIST[int(record["color"])]
+    note = record["note"]
+    x = record["x"]
+    y = record["y"]
+    if x > 0 and x < 500 and y > 0 and y < 500:
+        draw.point([(x, y)], fill=color)
+        im.save("base.png", "PNG", optimize=1)
+        if color != lastcolor:
+            im.save(
+                f"snapshots/{str(dt.today()).split(' ', maxsplit=1)[0]}-block{colorindex}.png",
+                optimize=1
+            )
+            lastcolor = color
+    print(f"{color} pixel at [{x}, {y}], provided note: {note}")
 
 ## we do a little threading... this will kill the project i can feel it
-threading.Thread(target=process_messages, daemon=True).start()
+# threading.Thread(target=process_messages, daemon=True).start()
 
-with connect_ws(BSKY_JETSTREAM) as ws:
-    with Image.open("base.png") as im:
-        draw = ImageDraw.Draw(im)
-        while True:
-            res = json.loads(ws.receive_text())
-            if res["kind"] == "commit":
-                q.put(res)
-        q.join()
+# Outer loop to handle WS errors
+while True: 
+    with connect_ws(BSKY_JETSTREAM_LIST[0]) as ws:
+        # inner loop protected by try-catch
+        try: 
+            while True:
+                res = ws.receive_json()
+                if res["kind"] == "commit":
+                    process_messages(res=res, im=im, draw=draw, lastcolor=lastcolor)
+        except Exception as e: 
+            print(f"Problem with firehose, reconnecting: {str(e)}")
+            break

@@ -3,6 +3,9 @@ body {
 }
 
 .badge {
+    text-decoration: none;
+}
+.badge > img {
     box-shadow: 0px 0px 10px green;
 }
 
