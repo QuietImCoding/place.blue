@@ -9,29 +9,31 @@ function getCursorPosition(canvas, event) {
       y = parseInt(event.touches[0].clientY) - rect.top;
     }
   } else {
-    x = event.clientX - rect.left;
-    y = event.clientY - rect.top;
+    x = Math.floor(event.clientX - rect.left);
+    y = Math.floor(event.clientY - rect.top);
   }
   return [x, y];
 }
 
 // Function to magnify the detailed image
-function renderMagnifier(xval, yval, res) {
+function renderMagnifier(xval, yval, res, xtarget = res, ytarget = res) {
   let division = res * 2 + 1;
-  let offset = magnifier.clientHeight / division;
+  let offset = magnifier.width / division;
   let linGrad = magctx.createLinearGradient(offset / 2, 0, offset / 2, offset);
   linGrad.addColorStop(0, "white");
   linGrad.addColorStop(1, "black");
   // DEBUG STATMENT!! I HATE MOBILE!!
-  // console.log(`Rendering magnifier at ${xval}, ${yval}, with resolution ${res} and division ${division}`)
+  // console.log(
+  //   magmode == "local"
+  //     ? `Rendering magnifier at ${xval}, ${yval}, with resolution ${res} and division ${division}`
+  //     : `Globaly magnifying origin at ${xval}, ${yval}, with resolution ${res} and division ${division}, mouse at ${xtarget},${ytarget}`
+  // );
   let region = ctx.getImageData(xval - res, yval - res, division, division);
   const data = region.data;
   for (let x = 0; x < division; x++) {
     for (let y = 0; y < division; y++) {
       let i = (x * division + y) * 4;
-      let rgbColor = `rgb(${data[i]} ${data[i + 1]} ${data[i + 2]} / ${
-        data[i + 3] / 255
-      })`;
+      let rgbColor = `rgb(${data[i]} ${data[i + 1]} ${data[i + 2]})`;
       magctx.fillStyle =
         xval - res + y > 0 &&
         yval - res + x > 0 &&
@@ -39,8 +41,11 @@ function renderMagnifier(xval, yval, res) {
         yval - res + x < 500
           ? rgbColor
           : "cadetblue";
+      // Drawing the actual pixel
       magctx.fillRect(y * offset, x * offset, offset, offset);
-      if (x == res && y == res) {
+//      console.log(`${xtarget / offset} ${ytarget /offset} ${xtarget} ${ytarget} ${offset}`)
+      if (x == Math.floor(offset * xval) && y == Math.floor(offset * xval)) {
+//        console.log(`${x} ${y} ${xtarget} ${ytarget}`)
         magctx.strokeStyle = linGrad;
         magctx.lineWidth = 1;
         magctx.strokeRect(y * offset, x * offset, offset, offset);
@@ -52,9 +57,9 @@ function renderMagnifier(xval, yval, res) {
 function scaleCanvas() {}
 
 function moveMagnifier(e) {
-  let [x, y] = getCursorPosition(canvas, e);
   // console.log(x, y)
   if (magmode == "local") {
+    magOffset = getCursorPosition(canvas, e);
     if (e.type == "mousemove") {
       magnifier.animate(
         {
@@ -73,33 +78,30 @@ function moveMagnifier(e) {
         { duration: 300, fill: "forwards" }
       );
     }
+  }
+  if (magmode == "local") {
     renderMagnifier(
-      x,
-      y,
+      magOffset[0],
+      magOffset[1],
       parseInt(document.getElementById("resolution").value)
     );
-    magnifier.style.left = `${e.clientX}px`;
-    magnifier.style.top = `${e.clientY}px`;
+  } else {
+    renderMagnifier(
+      magOffset[0],
+      magOffset[1],
+      parseInt(document.getElementById("resolution").value),
+      e.clientX, e.clientY
+    );
   }
 }
 
 // When mouse moved, render the magnifier and animate it
-window.addEventListener("mousemove", (e) => {
-  if (magmode == "local") moveMagnifier(e);
+magMoveHandler = window.addEventListener("mousemove", (e) => {
+  moveMagnifier(e);
 });
 window.addEventListener("touchmove", (e) => {
-  if (magmode == "local") moveMagnifier(e);
+  moveMagnifier(e);
 });
-
-/*
-// Events to hide and show the magnifier
-Array.from(document.querySelectorAll(".nomagnify")).forEach((e) => {
-  e.addEventListener("mouseenter", () => (magnifier.hidden = true));
-});
-Array.from(document.querySelectorAll(".nomagnify")).forEach((e) => {
-  e.addEventListener("mouseleave", () => (magnifier.hidden = false));
-});
-*/
 
 // Button to publish the pixels
 document.getElementById("push").addEventListener("click", (e) => {
@@ -115,12 +117,9 @@ function sendPixel(e) {
   let [x, y] = getCursorPosition(canvas, e);
   if (x > 0 && y > 0 && x < 500 && y < 500) {
     if (jwt) {
-      publishPixel(
-        Math.floor(x),
-        Math.floor(y),
-        colorvalue,
-        document.getElementById("note").value
-      );
+      if (magmode == "local") {
+        publishPixel(x, y, colorvalue, document.getElementById("note").value);
+      }
     } else {
       alert("Please log in before drawing pixels");
     }
@@ -128,7 +127,15 @@ function sendPixel(e) {
 }
 
 canvas.addEventListener("mousedown", (e) => {
-  magnifier.hidden = false;
+  if (magmode == "local") {
+    magnifier.hidden = false;
+  }
+});
+
+canvas.addEventListener("mouseup", (e) => {
+  if (magmode == "local") {
+    magnifier.hidden = true;
+  }
 });
 
 magnifier.addEventListener("mouseup", (e) => {
@@ -141,6 +148,7 @@ magnifier.addEventListener("mouseup", (e) => {
 canvas.addEventListener("touchstart", (e) => {
   magnifier.hidden = false;
 });
+
 magnifier.addEventListener("touchend", (e) => {
   sendPixel(e);
   if (e.touches.length == 0 && magmode == "local") {
@@ -179,44 +187,45 @@ document.getElementById("color").addEventListener("change", (e) => {
 
 // Listen for magnifier resizes
 document.getElementById("magsize").addEventListener("change", (e) => {
-  magnifier.clientHeight = parseInt(e.target.value);
-  magnifier.clientWidth = parseInt(e.target.value);
-  magnifier.height = parseInt(e.target.value);
-  magnifier.width = parseInt(e.target.value);
+  resizeMagnifier(e.target.value, 300);
 });
 
+// ENHANCE BUTTON
 let magzoom;
 function enhance(e) {
-  magnifier.hidden = false;
+  if (magmode == "local") magnifier.hidden = false;
+
+  resizeMagnifier(120, 300);
+
   magnifier.animate(
     {
       left: `${e.clientX}px`,
       top: `${e.clientY}px`,
       borderRadius: "0px",
-      width: "100px",
-      height: "100px",
     },
     { duration: 300, fill: "forwards" }
   );
-  document.getElementById("resolution").value = 50;
 
+  // document.getElementById("resolution").value = 50;
   magzoom = magnifier.addEventListener("mousedown", (e) => {
     if (magmode == "local") {
       magmode = "global";
-
+      document.getElementById("resolution").value = 50;
+      // magOffset = [e.offsetX, e.offsetY]
+      resizeMagnifier(500, 300);
       magnifier.animate(
         {
           left: `${canvas.offsetLeft + canvas.offsetWidth / 2}px`,
           top: `${canvas.offsetTop + canvas.offsetWidth / 2}px`,
-          width: "500px",
-          height: "500px",
-          clientHeight: 500,
-          clientWidth: 500,
         },
         { duration: 300, fill: "forwards" }
       );
-      // setTimeout(() => renderMagnifier(e.clientX, e.clientY, 100), 300);
-
+      renderMagnifier(
+        magOffset[0],
+        magOffset[1],
+        parseInt(document.getElementById("resolution").value),
+        e.clientX, e.clientY
+      );
     }
   });
 }
@@ -225,19 +234,15 @@ function dehance(e) {
   magmode = "local";
   magnifier.animate(
     {
-      left: `${e.clientX}px`,
-      top: `${e.clientY}px`,
+      left: e.clientX,
+      top: e.clientY,
       borderRadius: "100%",
-      clientHeight: parseInt(e.target.value),
-      clientWidth: parseInt(e.target.value),
-      height: `${document.getElementById("magsize").value}px`,
-      width: `${document.getElementById("magsize").value}px`,
     },
     { duration: 300, fill: "forwards" }
   );
   if (magzoom) magnifier.removeEventListener(magzoom);
   document.getElementById("resolution").value = 8;
-  setTimeout(() => ((magnifier.hidden = true)), 250);
+  setTimeout(() => (magnifier.hidden = true), 250);
 }
 
 document.getElementById("enhance").addEventListener("click", enhance);

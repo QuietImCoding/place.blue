@@ -4,13 +4,14 @@ const canvas = document.getElementById("place");
 const magnifier = document.getElementById("magnifier");
 canvas.height = 500;
 canvas.width = 500;
-magnifier.width = 90;
-magnifier.height = 90;
+magnifier.width = 120;
+magnifier.height = 120;
 magnifier.hidden = true;
 const ctx = canvas.getContext("2d", { willReadFrequently: true });
 ctx.fillStyle = "white";
 ctx.fillRect(0, 0, 500, 500);
 const magctx = magnifier.getContext("2d");
+
 
 // Set up random important variables
 // Select necessary DOM elements
@@ -19,11 +20,14 @@ let authIndicator = document.getElementById("account");
 let eventbox = document.getElementById("events");
 // Initialize values
 let colorvalue = 0;
+let magOffset = [0, 0];
+let magres = 8;
 let drawcolor, x, y;
 let animating = false;
 let domain, username, did, jwt, refresh;
 let altstream = false;
 let magmode = "local";
+let magMoveHandler;
 
 const COLORLIST = [
   "#000000",
@@ -90,13 +94,29 @@ Array.from(document.getElementsByClassName("colorbox")).forEach((element) => {
     let dragPixel = createDraggablePixel(e, fillcolor);
     document.body.addEventListener("pointermove", (event) => {
       // if (event.target.id = "dragpixel") {
-        dragPixel.style.left = `${event.clientX}px`;
-        dragPixel.style.top = `${event.clientY + document.body.scrollTop}px`;
+      dragPixel.style.left = `${event.clientX}px`;
+      dragPixel.style.top = `${event.clientY + document.body.scrollTop}px`;
       //}
     });
     dragPixel.addEventListener("mouseup", (e) => {
+        canvas.
       dragPixel.remove();
     });
     e.target.appendChild(dragPixel);
   });
 });
+
+function resizeMagnifier(size, time) {
+  magctx.height = `${Math.floor(size)}px`;
+  magctx.width = `${Math.floor(size)}px`;
+
+  magnifier.animate(
+    {
+      clientHeight: `${Math.floor(size)}px`,
+      clientWidth: `${Math.floor(size)}px`,
+      height: `${Math.floor(size)}px`,
+      width: `${Math.floor(size)}px`,
+    },
+    { duration: time, fill: "forwards" }
+  );
+}
