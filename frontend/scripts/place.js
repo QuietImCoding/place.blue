@@ -16,23 +16,36 @@ function getCursorPosition(canvas, event) {
 }
 
 // Function to magnify the detailed image
+// Cursed object, do not open unless under EXTREME duress
 function renderMagnifier(xval, yval, res, xtarget = res, ytarget = res) {
-  let division = res * 2 + 1;
-  let offset = magnifier.width / division;
-  let linGrad = magctx.createLinearGradient(offset / 2, 0, offset / 2, offset);
-  linGrad.addColorStop(0, "white");
-  linGrad.addColorStop(1, "black");
-  // DEBUG STATMENT!! I HATE MOBILE!!
+  // CLEAR MAGNIFIER
+  magctx.fillStyle = "white";
+  magctx.fillRect(0,0,magnifier.clientHeight, magnifier.clientWidth);
+
+  // "division" is the full width of the magnifier
+  // calculated as twice the resolution + 1
+  let division = (res * 2) + 1;
+  // The offset of each pixel is the width of the magnifier dividied by "division"
+  let offset = magnifier.clientWidth / division ;
+
+  // Madness, peer into the mind of a madman, 1 whole kilobyte of comments! 
   // console.log(
   //   magmode == "local"
   //     ? `Rendering magnifier at ${xval}, ${yval}, with resolution ${res} and division ${division}`
   //     : `Globaly magnifying origin at ${xval}, ${yval}, with resolution ${res} and division ${division}, mouse at ${xtarget},${ytarget}`
   // );
+  // console.log(`resolution: ${res}, division: ${division}, offset: ${offset}`)
+  // console.log(`getting region from (${xval-res}, ${yval-res}) to (${xval-res+division}, ${yval-res+division})`)
+
+  // get underlying region of pixels from (x-res, y-res) to (x+res, y+res)
+  // this is taken from CANVAS context not magctx
   let region = ctx.getImageData(xval - res, yval - res, division, division);
   const data = region.data;
   for (let x = 0; x < division; x++) {
     for (let y = 0; y < division; y++) {
+      // index in data array is x*division(row value) + y(col value) * 4 bc rgba 
       let i = (x * division + y) * 4;
+      // set color to first 3 bits from rgb data
       let rgbColor = `rgb(${data[i]} ${data[i + 1]} ${data[i + 2]})`;
       magctx.fillStyle =
         xval - res + y > 0 &&
@@ -41,20 +54,21 @@ function renderMagnifier(xval, yval, res, xtarget = res, ytarget = res) {
         yval - res + x < 500
           ? rgbColor
           : "cadetblue";
+          
       // Drawing the actual pixel
+      // 
       magctx.fillRect(y * offset, x * offset, offset, offset);
 //      console.log(`${xtarget / offset} ${ytarget /offset} ${xtarget} ${ytarget} ${offset}`)
-      if (x == Math.floor(offset * xval) && y == Math.floor(offset * xval)) {
+    //  if (x == Math.floor(offset * xval) && y == Math.floor(offset * xval)) {
+        if ( magmode == "global") {
 //        console.log(`${x} ${y} ${xtarget} ${ytarget}`)
-        magctx.strokeStyle = linGrad;
+        magctx.strokeStyle = (x + y)%2 == 0? "black" : "white";
         magctx.lineWidth = 1;
-        magctx.strokeRect(y * offset, x * offset, offset, offset);
+        //magctx.strokeRect(y * offset, x * offset, offset, offset);
       }
     }
   }
 }
-
-function scaleCanvas() {}
 
 function moveMagnifier(e) {
   // console.log(x, y)
@@ -89,8 +103,7 @@ function moveMagnifier(e) {
     renderMagnifier(
       magOffset[0],
       magOffset[1],
-      parseInt(document.getElementById("resolution").value),
-      e.clientX, e.clientY
+      parseInt(document.getElementById("resolution").value)
     );
   }
 }
@@ -119,6 +132,9 @@ function sendPixel(e) {
     if (jwt) {
       if (magmode == "local") {
         publishPixel(x, y, colorvalue, document.getElementById("note").value);
+      } else if (magmode == "global") {
+        let target=placeZoomedPixel(e);
+        publishPixel(target[0], target[1], colorvalue,document.getElementById("note").value);
       }
     } else {
       alert("Please log in before drawing pixels");
@@ -190,13 +206,40 @@ document.getElementById("magsize").addEventListener("change", (e) => {
   resizeMagnifier(e.target.value, 300);
 });
 
+function morphMagnifier(e) {
+    if (magmode == "local") {
+      magmode = "global";
+      
+      document.getElementById("resolution").value = 50;
+      // magOffset = [e.offsetX, e.offsetY]
+      
+      resizeMagnifier(490, 300);
+
+      magnifier.animate(
+        {
+          left: `${canvas.offsetLeft + canvas.offsetWidth / 2}px`,
+          top: `${canvas.offsetTop + canvas.offsetWidth / 2}px`,
+        },
+        { duration: 300, fill: "forwards" }
+      );
+      // magnifier.width=500;
+      // magnifier.height=500;
+      renderMagnifier(
+        magOffset[0],
+        magOffset[1],
+        parseInt(document.getElementById("resolution").value),
+        e.clientX, e.clientY
+      );
+      magnifier.style.position = "absolute";
+    }
+}
+
 // ENHANCE BUTTON
 let magzoom;
 function enhance(e) {
   if (magmode == "local") magnifier.hidden = false;
 
   resizeMagnifier(120, 300);
-
   magnifier.animate(
     {
       left: `${e.clientX}px`,
@@ -206,43 +249,29 @@ function enhance(e) {
     { duration: 300, fill: "forwards" }
   );
 
-  // document.getElementById("resolution").value = 50;
-  magzoom = magnifier.addEventListener("mousedown", (e) => {
-    if (magmode == "local") {
-      magmode = "global";
-      document.getElementById("resolution").value = 50;
-      // magOffset = [e.offsetX, e.offsetY]
-      resizeMagnifier(500, 300);
-      magnifier.animate(
-        {
-          left: `${canvas.offsetLeft + canvas.offsetWidth / 2}px`,
-          top: `${canvas.offsetTop + canvas.offsetWidth / 2}px`,
-        },
-        { duration: 300, fill: "forwards" }
-      );
-      renderMagnifier(
-        magOffset[0],
-        magOffset[1],
-        parseInt(document.getElementById("resolution").value),
-        e.clientX, e.clientY
-      );
-    }
-  });
+  document.getElementById("resolution").value = 50;
+  magzoom = magnifier.addEventListener("mousedown", morphMagnifier);
 }
 
 function dehance(e) {
+  magnifier.style.position = "fixed";
+
   magmode = "local";
+  // magnifier.width=120;
+  // magnifier.height=120;
+  resizeMagnifier(120, 200);
   magnifier.animate(
     {
-      left: e.clientX,
-      top: e.clientY,
+      left: `${e.clientX}px`,
+      top: `${e.clientY}px`,
       borderRadius: "100%",
     },
     { duration: 300, fill: "forwards" }
   );
   if (magzoom) magnifier.removeEventListener(magzoom);
   document.getElementById("resolution").value = 8;
-  setTimeout(() => (magnifier.hidden = true), 250);
+ 
+  setTimeout(() => (magnifier.hidden = true), 350);
 }
 
 document.getElementById("enhance").addEventListener("click", enhance);

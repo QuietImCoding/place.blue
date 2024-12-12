@@ -26,13 +26,13 @@
         <h2>Magnifier settings</h2>
         <label for="resolution">Pixels to show in the magnifier:</label>
         <input
-          type="number"
+          type="range"
           name="resolution"
           id="resolution"
           min="2"
-          max="30"
+          max="50"
           step="1"
-          value="8"
+          value="16"
         />
         <br />
         <label for="magsize">Size of magnifier</label>
@@ -40,6 +40,16 @@
           type="range"
           name="magsize"
           id="magsize"
+          min="50"
+          max="250"
+          value="120"
+        />
+        <br>
+        <label for="zoomdepth">Zoom Depth</label>
+        <input
+          type="range"
+          name="zoomdepth"
+          id="zoomdepth"
           min="50"
           max="250"
           value="120"
