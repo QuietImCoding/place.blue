@@ -1,5 +1,15 @@
+@font-face {
+    font-family: "Chomsky";
+    src: url("../fonts/Chomsky.woff2");
+}
+
 body {
     background-color: cadetblue;
+    background-image: url('https://www.lexaloffle.com/media/43589/2_dvdscreensaver_0.gif');
+    background-size: 100% auto;
+    display: flex;
+    flex-wrap: wrap;
+    font-family: cursive;
 }
 
 .badge {
@@ -10,15 +20,34 @@ body {
 }
 
 .main {
+    flex: 2;
+}
+.noselect {
     user-select: none;
-    -moz-user-select: none
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
 }
 
 .zooms {
-    width: 100%;
+    /* width: max-content; */ 
     display: flex;
     align-items: center;
     justify-content: space-evenly;
+    padding: 0px 10px 0px 10px;
+    border: 10px inset pink;
+    margin-bottom: 10px;
+    background-image: url("../images/tileable.png");
+    background-repeat: repeat;
+    color: black;
+    text-shadow: 2px 2px 8px aliceblue;
+}
+
+.zooms > * {
+    margin: 10px 20px 10px 20px
+
+    
 }
 
 #dragpixel {
@@ -38,8 +67,27 @@ footer {
 .wrap {
     padding: 5px;
     margin: 10px;
+    background-image: url("../images/pincheckers.png");
     background-color: lightgray;
     border: 4px double darkgray;
+    display: flex;
+    flex: 1;
+    flex-basis: 200px;
+    flex-direction: column;
+    align-items: center;
+    justify-items: center;
+    height: min-content;
+}
+
+.block {
+    background-image: none;
+    background-color: azure;
+    border: 5px double green;
+    margin: 10px;
+}
+
+.row {
+    flex-direction: row;
 }
 
 div #place {
@@ -50,6 +98,7 @@ div #place {
     height: 500px;
     width: 500px;
     margin-left: 5px;
+    align-self: center;
 }
 
 #heading {
@@ -71,9 +120,9 @@ div #place {
 
 h1 {
     display: inline-block;
-    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-    font-weight: 800;
-    font-size: 3em;
+    font-family: 'Chomsky';
+    font-weight: lighter;
+    font-size: 4em;
     text-align: center;
 }
 
@@ -81,8 +130,8 @@ h1 {
     display: inline-block;
     background-color: black;
     border: 5px ridge gold;
-    width: 35px;
-    height: 35px;
+    width: 40px;
+    height: 40px;
     margin-bottom: 10px;
     margin-right: 5px;
 }
@@ -121,25 +170,24 @@ span.highlighted {
     padding: .25em;
   }
 
-.col-left {
-    float: left;
-    max-width: 510px;
-}
-
-.col-right {
-    float: right
-}
-
 input[type="text"],
 input[type="radio"] {
     display: block;
     width: inherit;
 }
 
+#colorpreview {
+    max-width: 50px;
+    height: 100px;
+    margin: 10px;
+    border-radius: 100% 100% 0% 0%;
+}
 #controls {
     background-color: beige;
-    padding: 2em;
-    width: inherit;
+    padding: 15px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    
 }
 
 #login {

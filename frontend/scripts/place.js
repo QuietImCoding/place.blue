@@ -72,7 +72,7 @@ function renderMagnifier(xval, yval, res, xtarget = res, ytarget = res) {
 
 function moveMagnifier(e) {
   // console.log(x, y)
-  if (magmode == "local") {
+  if (["local", "preview"].includes(magmode)) {
     magOffset = getCursorPosition(canvas, e);
     if (e.type == "mousemove") {
       magnifier.animate(
@@ -127,6 +127,7 @@ document.getElementById("push").addEventListener("click", (e) => {
 });
 
 function sendPixel(e) {
+  console.log(`current magmode is ${magmode}`)
   let [x, y] = getCursorPosition(canvas, e);
   if (x > 0 && y > 0 && x < 500 && y < 500) {
     if (jwt) {
@@ -155,7 +156,7 @@ canvas.addEventListener("mouseup", (e) => {
 });
 
 magnifier.addEventListener("mouseup", (e) => {
-  sendPixel(e);
+  if (magmode != "preview") sendPixel(e);
   if (magmode == "local") {
     magnifier.hidden = true;
   }
@@ -171,6 +172,7 @@ magnifier.addEventListener("touchend", (e) => {
     magnifier.hidden = true;
   }
 });
+// send pixel from canvas this time bc of offset
 canvas.addEventListener("touchend", (e) => {
   sendPixel(e);
   if (e.touches.length == 0 && magmode == "local") {
@@ -207,12 +209,10 @@ document.getElementById("magsize").addEventListener("change", (e) => {
 });
 
 function morphMagnifier(e) {
-    if (magmode == "local") {
+    if (magmode == "preview") {
       magmode = "global";
       
-      document.getElementById("resolution").value = 50;
-      // magOffset = [e.offsetX, e.offsetY]
-      
+      document.getElementById("resolution").value = 50;      
       resizeMagnifier(490, 300);
 
       magnifier.animate(
@@ -222,14 +222,14 @@ function morphMagnifier(e) {
         },
         { duration: 300, fill: "forwards" }
       );
-      // magnifier.width=500;
-      // magnifier.height=500;
+
       renderMagnifier(
         magOffset[0],
         magOffset[1],
         parseInt(document.getElementById("resolution").value),
         e.clientX, e.clientY
       );
+      
       magnifier.style.position = "absolute";
     }
 }
@@ -237,7 +237,10 @@ function morphMagnifier(e) {
 // ENHANCE BUTTON
 let magzoom;
 function enhance(e) {
-  if (magmode == "local") magnifier.hidden = false;
+  if (magmode == "local") {
+    magnifier.hidden = false;
+    magmode = "preview";
+  }
 
   resizeMagnifier(120, 300);
   magnifier.animate(

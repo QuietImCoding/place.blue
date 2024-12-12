@@ -5,120 +5,26 @@
   </head>
   <body>
     <!-- MAIN PARTY AREA -->
-    <div class="wrap main col-left">
-
-      <div id="heading" class="wrap nomagnify">
-        <div id="colorpreview" class="wrap colorbox"></div>
-        <h1>Welcome to the Blue Place</h1>
+    <div class="wrap main">
+      <div class="noselect">
+        <div id="heading" class="block row">
+          <div id="colorpreview" class="wrap block colorbox"></div>
+          <h1>Welcome to the Blue Place</h1>
+        </div>
+        <div class="zooms">
+          <p>Enhance:</p>
+          <button id="enhance" type="button">enhance</button>
+          <button id="dehance" type="button">dehance</button>
+        </div>
+        <canvas id="place"></canvas>
+        <canvas id="magnifier"></canvas>
+        <div id="controls" class="row block"></div>
       </div>
-      <div class="zooms">
-        <p>Enhance: </p>
-        <button id="enhance" type="button">enhance</button>
-        <button id="dehance" type="button">dehance</button>
-      </div>
-      <canvas id="place"></canvas>
-      <canvas id="magnifier"></canvas>
-      <div id="controls" class="wrap"></div>
-    </div>
-    <!-- MAGNIFIER SETTINGS -->
-    <div class="col-left wrap">
-      <div class="wrap" style="background-color: pink; padding: 4em">
-        <h2>Magnifier settings</h2>
-        <label for="resolution">Pixels to show in the magnifier:</label>
-        <input
-          type="range"
-          name="resolution"
-          id="resolution"
-          min="2"
-          max="50"
-          step="1"
-          value="16"
-        />
-        <br />
-        <label for="magsize">Size of magnifier</label>
-        <input
-          type="range"
-          name="magsize"
-          id="magsize"
-          min="50"
-          max="250"
-          value="120"
-        />
-        <br>
-        <label for="zoomdepth">Zoom Depth</label>
-        <input
-          type="range"
-          name="zoomdepth"
-          id="zoomdepth"
-          min="50"
-          max="250"
-          value="120"
-        />
-      </div>
-      <!-- LEAVE A NOTE -->
-      <div style="background-color: azure; padding: 4em">
-        <h2>Leave a note with your pixels</h2>
-        <p>
-          These will stay in your repo forever but fade from this site quickly,
-          so don't write anything stupid. Will be submitted with each pixel you
-          change.
-        </p>
-        <textarea
-          name="notebox"
-          id="note"
-          cols="30"
-          rows="10"
-          maxlength="300"
-        ></textarea>
-      </div>
-      <!-- pixel history area -->
-      <div class="wrap" style="background-color: darkseagreen; padding: 4em">
-        <h2>Your Past Pixels</h2>
-        <p>Hover over the boxes to display the notes below:</p>
-        <p id="historynote"></p>
-        <div class="wrap" id="pixelhistory"></div>
-      </div>
-    </div>
-    <!-- Alternative Stream Toggle -->
-    <div class="col-left wrap">
-      <div class="wrap" style="background-color: cornsilk; padding: 4em">
-        <h2>Toggle Alternative Pixel Stream</h2>
-        <fieldset>
-          <legend>Select Pixel Source</legend>
-          <input
-            type="radio"
-            name="pixelsource"
-            value="0"
-            id="blueplacestream"
-            checked
-          />
-          <label for="blueplacestream">Place.blue Pixel Records</label>
-          <input type="radio" name="pixelsource" value="1" id="bskystream" />
-          <label for="bskystream">Calculated from bluesky posts</label>
-        </fieldset>
-      </div>
-      <!-- THE EVENT STREAM -->
-      <div
-        class="wrap"
-        style="background-color: burlywood; padding: 4em; max-width: initial"
-      >
-        <h2>Event Stream</h2>
-        <label for="eventspeed">Event Speed:</label>
-        <input
-          type="range"
-          name="eventspeed"
-          id="eventspeed"
-          min="1"
-          max="50"
-          value="10"
-        />
-        <div id="events"></div>
-      </div>
-    </div>
-    <!-- LOGIN SECTION -->
-    <div class="col-left wrap nomagnify">
-      <div id="login" class="wrap">
+      <!-- LOGIN SECTION -->
+      <div id="login" class="wrap block">
         <h2>Atproto Credentials</h2>
+        <img src="images/flowersep.png" />
+
         <p>Please use an app password rather than the main one</p>
         <fieldset>
           <form action="javascript:void(0);">
@@ -150,8 +56,75 @@
           </form>
         </fieldset>
       </div>
+    </div>
+    <!-- MAGNIFIER SETTINGS -->
+    <div class="wrap">
+      <div class="wrap block" style="background-color: pink; padding: 4em">
+        <h2>Magnifier settings</h2>
+        <label for="resolution">Pixels to show in the magnifier:</label>
+        <input
+          type="range"
+          name="resolution"
+          id="resolution"
+          min="2"
+          max="50"
+          step="1"
+          value="16"
+        />
+        <br />
+        <label for="magsize">Size of magnifier</label>
+        <input
+          type="range"
+          name="magsize"
+          id="magsize"
+          min="50"
+          max="250"
+          value="120"
+        />
+        <br />
+        <label for="zoomdepth">Zoom Depth</label>
+        <input
+          type="range"
+          name="zoomdepth"
+          id="zoomdepth"
+          min="50"
+          max="250"
+          value="120"
+        />
+      </div>
+      <!-- LEAVE A NOTE -->
+      <div class="wrap block" style="background-color: azure; padding: 4em">
+        <h2>Leave a note with your pixels</h2>
+        <img src="images/flowersep.png" />
+        <p>
+          These will stay in your repo forever but fade from this site quickly,
+          so don't write anything stupid. Will be submitted with each pixel you
+          change.
+        </p>
+        <textarea
+          name="notebox"
+          id="note"
+          cols="30"
+          rows="10"
+          maxlength="300"
+        ></textarea>
+      </div>
+      <!-- pixel history area -->
+      <div
+        class="wrap block"
+        style="background-color: darkseagreen; padding: 4em"
+      >
+        <h2>Your Past Pixels</h2>
+        <img src="images/flowersep.png" />
+        <p>Hover over the boxes to display the notes below:</p>
+        <p id="historynote"></p>
+        <div id="pixelhistory"></div>
+      </div>
+    </div>
+    <!-- Alternative Stream Toggle -->
+    <div class="wrap">
       <!-- Manually submit a pixel -->
-      <div class="wrap" id="manualinput">
+      <div class="wrap block" id="manualinput">
         <h2>Manual pixel input</h2>
         <input class="inrow" type="text" name="x" id="x" placeholder="x" />
         <input class="inrow" type="text" name="y" id="y" placeholder="y" />
@@ -159,7 +132,40 @@
         <p id="colorref"></p>
         <button id="push">send pixel</button>
       </div>
+      <div class="wrap block" style="background-color: cornsilk; padding: 4em">
+        <h2>Toggle Alternative Pixel Stream</h2>
+        <img src="images/flowersep.png" />
+
+        <fieldset>
+          <legend>Select Pixel Source</legend>
+          <input
+            type="radio"
+            name="pixelsource"
+            value="0"
+            id="blueplacestream"
+            checked
+          />
+          <label for="blueplacestream">Place.blue Pixel Records</label>
+          <input type="radio" name="pixelsource" value="1" id="bskystream" />
+          <label for="bskystream">Calculated from bluesky posts</label>
+        </fieldset>
+      </div>
+      <!-- THE EVENT STREAM -->
+      <div class="wrap block" style="background-color: burlywood; padding: 4em">
+        <h2>Event Stream</h2>
+        <label for="eventspeed">Event Speed:</label>
+        <input
+          type="range"
+          name="eventspeed"
+          id="eventspeed"
+          min="1"
+          max="50"
+          value="10"
+        />
+        <div id="events"></div>
+      </div>
     </div>
+
     <!-- Fixed footer with fun badges -->
     <footer>
       <img

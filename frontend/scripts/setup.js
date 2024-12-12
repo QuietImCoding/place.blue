@@ -127,12 +127,15 @@ Array.from(document.getElementsByClassName("colorbox")).forEach((element) => {
         //}
       });
       dragPixel.addEventListener("mouseup", (e) => {
+        rect=canvas.getBoundingClientRect()
         let mouseOverCanvas =
-          e.clientX > canvas.clientLeft &&
-          e.clientY > canvas.clientTop &&
-          e.clientX < canvas.clientLeft + canvas.clientWidth &&
-          e.clientY < canvas.clientTop + canvas.clientHeight + document.body.scrollTop;
-        console.log(e.clientX, e.clientY, canvas.clientLeft, canvas.clientTop, canvas.clientWidth, canvas.clientHeight)
+          e.screenX > rect.left &&
+          e.screenY > rect.top &&
+          e.screenX < rect.left + canvas.clientWidth &&
+          e.screenY < rect.top + canvas.clientHeight;
+
+        // debugger??? YOU MEAN CONSOLE.LOG???????
+        // console.log(e.clientX, e.clientY, rect.left, rect.top, canvas.clientWidth, canvas.clientHeight)
         if (mouseOverCanvas) {
           let target = placeZoomedPixel(e);
           publishPixel(
