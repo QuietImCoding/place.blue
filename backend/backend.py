@@ -38,7 +38,7 @@ im = Image.open("base.png")
 draw = ImageDraw.Draw(im)
 
 
-def process_messages(res, im, draw, lastcolor):
+def process_messages(res, im, draw, lastcolor, ofile=None):
     record = res["commit"]["record"]
     print(record)
     colorindex = int(record["color"])
@@ -55,11 +55,15 @@ def process_messages(res, im, draw, lastcolor):
                 optimize=1,
             )
             lastcolor = color
+    if ofile != None:
+        ofile.write(f'{x}, {y}, {color}, "{note}"')
     print(f"{color} pixel at [{x}, {y}], provided note: {note}")
 
 
 ## we do a little threading... this will kill the project i can feel it
 # threading.Thread(target=process_messages, daemon=True).start()
+
+ofile = open("logs/canvas_0.txt", "a", encoding="utf8")
 
 # Outer loop to handle WS errors
 while True:
@@ -72,7 +76,11 @@ while True:
                     if res["kind"] == "commit":
                         executor.submit(
                             process_messages(
-                                res=res, im=im, draw=draw, lastcolor=lastcolor
+                                res=res,
+                                im=im,
+                                draw=draw,
+                                lastcolor=lastcolor,
+                                ofile=ofile,
                             )
                         )
             except Exception as e:
