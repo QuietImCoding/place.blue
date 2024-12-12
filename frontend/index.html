@@ -9,14 +9,15 @@
       <div class="noselect">
         <div id="heading" class="block row">
           <div id="colorpreview" class="wrap block colorbox"></div>
-          <h1>Welcome to the Blue Place</h1>
+          <h1>Welcome to the Blue Place<span id="touchindicator"></span></h1>
         </div>
         <div class="zooms">
           <p>Enhance:</p>
           <button id="enhance" type="button">enhance</button>
           <button id="dehance" type="button">dehance</button>
         </div>
-        <canvas id="place"></canvas>
+        <div id="placeholder"><canvas id="place"></canvas></div>
+        
         <canvas id="magnifier"></canvas>
         <div id="controls" class="row block"></div>
       </div>
@@ -82,14 +83,14 @@
           value="120"
         />
         <br />
-        <label for="zoomdepth">Zoom Depth</label>
+        <label for="zoomdepth">Zoom Size</label>
         <input
           type="range"
           name="zoomdepth"
           id="zoomdepth"
-          min="50"
-          max="250"
-          value="120"
+          min="12"
+          max="100"
+          value="25"
         />
       </div>
       <!-- LEAVE A NOTE -->

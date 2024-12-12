@@ -77,6 +77,7 @@ footer {
     align-items: center;
     justify-items: center;
     height: min-content;
+    max-width: fit-content;
 }
 
 .block {
@@ -87,18 +88,23 @@ footer {
 }
 
 .row {
+    display: flex;
     flex-direction: row;
 }
 
-div #place {
+#placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#place {
     touch-action: none;
-    box-sizing: border-box;
     border: 5px ridge gold;
     background-color: white;
     height: 500px;
     width: 500px;
-    margin-left: 5px;
-    align-self: center;
+
 }
 
 #heading {
@@ -134,6 +140,7 @@ h1 {
     height: 40px;
     margin-bottom: 10px;
     margin-right: 5px;
+    touch-action: none;
 }
 
 #pixelhistory {
@@ -184,10 +191,10 @@ input[type="radio"] {
 }
 #controls {
     background-color: beige;
-    padding: 15px;
-    flex-direction: row;
-    flex-wrap: wrap;
-    
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 5px;
+    padding: 10px;
 }
 
 #login {

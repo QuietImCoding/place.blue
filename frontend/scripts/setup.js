@@ -27,6 +27,9 @@ let domain, username, did, jwt, refresh;
 let altstream = false;
 let magmode = "local";
 let magMoveHandler;
+let zoomRes = 25;
+let touchUser = false;
+let dragElement;
 
 const COLORLIST = [
   "#000000",
@@ -70,7 +73,7 @@ function createDraggablePixel(e, color) {
   dragPixel.style.top = e.clientX;
   dragPixel.style.left = e.clientY;
   dragPixel.id = "dragpixel";
-  dragPixel.style.backgroundColor = COLORLIST[color-1];
+  dragPixel.style.backgroundColor = COLORLIST[color - 1];
   dragPixel.value = color;
   dragPixel.style.position = "absolute";
   dragPixel.style.width = "10px";
@@ -81,8 +84,7 @@ function createDraggablePixel(e, color) {
 
 function placeZoomedPixel(e) {
   const box = canvas.getBoundingClientRect();
-  let scaleFactor =
-    box.width / (document.getElementById("resolution").value * 2 + 1);
+  let scaleFactor = box.width / (zoomRes * 2 + 1);
   ctx.fillStyle = e.target.style.backgroundColor;
   console.log(magOffset);
   console.log(
@@ -90,7 +92,7 @@ function placeZoomedPixel(e) {
     parseInt(e.clientY - box.y),
     scaleFactor
   );
-  res = parseInt(document.getElementById("resolution").value);
+  res = zoomRes;
   let target = [
     Math.floor(
       magOffset[0] - res + parseInt(e.clientX - box.left) / scaleFactor
@@ -105,6 +107,45 @@ function placeZoomedPixel(e) {
   return target;
 }
 
+function dropDragPixel(e) {
+  let rect = canvas.getBoundingClientRect();
+  let mouseOverCanvas =
+    e.screenX > rect.left &&
+    e.screenY > rect.top &&
+    e.screenX < rect.left + canvas.clientWidth &&
+    e.screenY < rect.top + canvas.clientHeight;
+
+  // debugger??? YOU MEAN CONSOLE.LOG???????
+  // console.log(e.clientX, e.clientY, rect.left, rect.top, canvas.clientWidth, canvas.clientHeight)
+  if (mouseOverCanvas) {
+    let target = placeZoomedPixel(e);
+    publishPixel(
+      target[0],
+      target[1],
+      e.target.value - 1, // lol, LMAO even
+      document.getElementById("note").value
+    );
+  }
+  dragElement.remove();
+}
+
+function draggableEventListener(e) {
+  if (magmode == "global") {
+    let dragPixel = createDraggablePixel(e, e.target.value);
+    document.body.addEventListener("pointermove", (event) => {
+      // if (event.target.id = "dragpixel") {
+      dragPixel.style.left = `${event.clientX}px`;
+      dragPixel.style.top = `${event.clientY + document.body.scrollTop}px`;
+      //}
+    });
+
+    dragPixel.addEventListener("mouseup", dropDragPixel);
+    dragPixel.addEventListener("touchend", dropDragPixel);
+    dragElement = dragPixel;
+    e.target.appendChild(dragPixel);
+  }
+}
+
 // Assign the click event listeners to every color box
 Array.from(document.getElementsByClassName("colorbox")).forEach((element) => {
   element.addEventListener("click", (e) => {
@@ -115,41 +156,7 @@ Array.from(document.getElementsByClassName("colorbox")).forEach((element) => {
     // console.log(colorvalue)
   });
 
-  element.addEventListener("mousedown", (e) => {
-    let fillcolor = e.target.style.backgroundColor;
-
-    if (magmode == "global") {
-      let dragPixel = createDraggablePixel(e, e.target.value);
-      document.body.addEventListener("pointermove", (event) => {
-        // if (event.target.id = "dragpixel") {
-        dragPixel.style.left = `${event.clientX}px`;
-        dragPixel.style.top = `${event.clientY + document.body.scrollTop}px`;
-        //}
-      });
-      dragPixel.addEventListener("mouseup", (e) => {
-        rect=canvas.getBoundingClientRect()
-        let mouseOverCanvas =
-          e.screenX > rect.left &&
-          e.screenY > rect.top &&
-          e.screenX < rect.left + canvas.clientWidth &&
-          e.screenY < rect.top + canvas.clientHeight;
-
-        // debugger??? YOU MEAN CONSOLE.LOG???????
-        // console.log(e.clientX, e.clientY, rect.left, rect.top, canvas.clientWidth, canvas.clientHeight)
-        if (mouseOverCanvas) {
-          let target = placeZoomedPixel(e);
-          publishPixel(
-            target[0],
-            target[1],
-            e.target.value - 1, // lol, LMAO even
-            document.getElementById("note").value
-          );
-        }
-        dragPixel.remove();
-      });
-      e.target.appendChild(dragPixel);
-    }
-  });
+  element.addEventListener("mousedown", draggableEventListener);
 });
 
 function resizeMagnifier(size, time) {
@@ -161,6 +168,12 @@ function resizeMagnifier(size, time) {
     { duration: time, fill: "forwards" }
   );
   setTimeout((e) => {
-    (magnifier.height = Math.floor(size)), (magnifier.width = Math.floor(size));
+    magnifier.height = Math.floor(size);
+    magnifier.width = Math.floor(size);
+    renderMagnifier(magOffset[0], magOffset[1], zoomRes);
   }, time / 2);
 }
+
+document.getElementById("zoomdepth").addEventListener("change", (e) => {
+  zoomRes = parseInt(e.target.value);
+});

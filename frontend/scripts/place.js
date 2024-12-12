@@ -3,6 +3,8 @@ function getCursorPosition(canvas, event) {
   const rect = canvas.getBoundingClientRect();
   let x, y;
   if (event.type.includes("touch")) {
+    touchUser = true;
+    document.getElementById("touchindicator").innerText="\n(touch edition)";
     // console.log(event);
     if (event.touches.length > 0) {
       x = parseInt(event.touches[0].clientX) - rect.left;
@@ -103,7 +105,7 @@ function moveMagnifier(e) {
     renderMagnifier(
       magOffset[0],
       magOffset[1],
-      parseInt(document.getElementById("resolution").value)
+      zoomRes
     );
   }
 }
@@ -209,10 +211,10 @@ document.getElementById("magsize").addEventListener("change", (e) => {
 });
 
 function morphMagnifier(e) {
+  console.log("its mighty m orphin time");
     if (magmode == "preview") {
       magmode = "global";
       
-      document.getElementById("resolution").value = 50;      
       resizeMagnifier(490, 300);
 
       magnifier.animate(
@@ -226,7 +228,7 @@ function morphMagnifier(e) {
       renderMagnifier(
         magOffset[0],
         magOffset[1],
-        parseInt(document.getElementById("resolution").value),
+        zoomRes,
         e.clientX, e.clientY
       );
       
@@ -252,8 +254,10 @@ function enhance(e) {
     { duration: 300, fill: "forwards" }
   );
 
-  document.getElementById("resolution").value = 50;
-  magzoom = magnifier.addEventListener("mousedown", morphMagnifier);
+  document.getElementById("resolution").value = zoomRes;
+  magzoom = touchUser ? 
+    magnifier.addEventListener("mousedown", morphMagnifier) : 
+    canvas.addEventListener("touchend", morphMagnifier);
 }
 
 function dehance(e) {
@@ -272,7 +276,7 @@ function dehance(e) {
     { duration: 300, fill: "forwards" }
   );
   if (magzoom) magnifier.removeEventListener(magzoom);
-  document.getElementById("resolution").value = 8;
+  // document.getElementById("resolution").value = 8;
  
   setTimeout(() => (magnifier.hidden = true), 350);
 }
