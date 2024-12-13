@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="styles/styles.css" />
   </head>
   <body>
+    <div class="cols">
     <!-- MAIN PARTY AREA -->
     <div class="wrap main">
       <div class="noselect">
@@ -44,14 +45,14 @@
               type="text"
               name="handle"
               id="handle"
-              placeholder="Username"
+              placeholder="handle.bsky.social"
             />
             <input
               autocomplete="current-password"
               type="password"
               name="password"
               id="password"
-              placeholder="App Password"
+              placeholder="epic-pass-word"
             />
             <button id="auth">log me in</button>
           </form>
@@ -166,9 +167,9 @@
         <div id="events"></div>
       </div>
     </div>
-
+  </div>
     <!-- Fixed footer with fun badges -->
-    <footer>
+    <div class="overlay">
       <img
         height="16px"
         src="images/skyspin.gif"
@@ -180,15 +181,23 @@
       >
         <img
           src="images/badge/goose_badge.gif"
+          class="highlight"
           alt="tiny pixelart badge of a goose honking"
         />
-      </a>
+
       <img
         height="16px"
         src="images/skyspin.gif"
         alt="tiny spinning bluesky logo"
       />
-    </footer>
+      
+    </div>
+    <footer class="row">
+      <p>badge collection: </p>
+      <a href="https://plasticdino.neocities.org/graphics" class="badge linkbadge">
+        <img src="https://plasticdino.neocities.org/buttons/nap%20time.png" alt="i need a nap">
+      </a>
+  </footer>
     <script src="scripts/base32.js"></script>
     <script src="scripts/setup.js"></script>
     <script src="scripts/atproto.js"></script>

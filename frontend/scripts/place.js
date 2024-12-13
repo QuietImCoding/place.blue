@@ -236,6 +236,17 @@ function morphMagnifier(e) {
     }
 }
 
+document.onkeydown = e => {
+  console.log(e);
+  if (e.key === "Escape") {
+    if (dragElement) {
+      dragElement.remove();
+    }
+    magnifier.hidden = true;
+    magmode = "local";
+  } 
+}
+
 // ENHANCE BUTTON
 let magzoom;
 function enhance(e) {
@@ -256,8 +267,8 @@ function enhance(e) {
 
   document.getElementById("resolution").value = zoomRes;
   magzoom = touchUser ? 
-    magnifier.addEventListener("mousedown", morphMagnifier) : 
-    canvas.addEventListener("touchend", morphMagnifier);
+    canvas.addEventListener("touchend", morphMagnifier) :
+    magnifier.addEventListener("click", morphMagnifier);
 }
 
 function dehance(e) {
